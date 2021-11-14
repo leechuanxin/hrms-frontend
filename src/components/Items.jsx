@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Items({ items, setItemDetail }) {
-  const [selectedItemIndex, setSelectedItemIndex] = useState();
-
+export default function Items({ selectedItemIndex, items, setItemDetail }) {
   const setItemSelected = (item, index) => {
     setItemDetail(index);
-    setSelectedItemIndex(index);
   };
 
   return (
     <div className="col-sm">
       <div className="items">
+        {/* create a Link for every item.
+            Link changes the current component based on the to prop, and
+            also calls the onClick callback */}
         {items.map((item, index) => (
-          <button
+          <Link
+            to={`/items/${item.id}`}
             key={item.id}
-            type="button"
-            className={index === selectedItemIndex ? 'item selected' : 'item'}
+            className={index === selectedItemIndex ? "item selected" : "item"}
             onClick={() => setItemSelected(item, index)}
           >
             {item.name}
-          </button>
+          </Link>
         ))}
       </div>
     </div>

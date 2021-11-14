@@ -18,7 +18,7 @@ export default function Cart({ items, emptyCart }) {
         </div>
       );
     }
-    return <div />;
+    return <div>Cart</div>;
   }
 
   const calculateTotals = (items) => {
