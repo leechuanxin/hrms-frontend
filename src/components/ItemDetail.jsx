@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
-export default function ItemDetail({ item, addToCart, location, onDeepLink }) {
+export default function ItemDetail({
+  item, addToCart, onDeepLink,
+}) {
   const [quantity, setQuantity] = useState(1);
 
   // create a hook to use when the logic says to change components
   const history = useHistory();
-  let { id } = useParams();
+  const { id } = useParams();
 
   useEffect(() => {
     if (!item) {
@@ -26,7 +28,7 @@ export default function ItemDetail({ item, addToCart, location, onDeepLink }) {
 
   const detailAddCart = () => {
     // when the user ads to cart take them to the cart
-    history.push("/cart");
+    history.push('/cart');
     addToCart(item, quantity);
   };
 

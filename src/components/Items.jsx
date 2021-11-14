@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Items({ selectedItemIndex, items, setItemDetail }) {
   const setItemSelected = (item, index) => {
@@ -16,7 +16,7 @@ export default function Items({ selectedItemIndex, items, setItemDetail }) {
           <Link
             to={`/items/${item.id}`}
             key={item.id}
-            className={index === selectedItemIndex ? "item selected" : "item"}
+            className={index === selectedItemIndex ? 'item selected' : 'item'}
             onClick={() => setItemSelected(item, index)}
           >
             {item.name}
