@@ -14,9 +14,11 @@ import './App.css';
 // component partials
 import Navbar from './components/Navbar/Navbar.jsx';
 // auth pages
-import Index from './components/Index/IndexPage.jsx';
 import Login from './components/Login/LoginPage.jsx';
 import Register from './components/Register/RegisterPage.jsx';
+// other pages
+import Index from './components/Index/IndexPage.jsx';
+import Error404 from './components/Error/Error404Page.jsx';
 
 // make sure that axios always sends the cookies to the backend server
 axios.defaults.withCredentials = true;
@@ -138,6 +140,19 @@ export default function App() {
               <Index
                 isLoggedIn={isLoggedIn}
               />
+            </NavbarWrapper>
+          )}
+        />
+        <Route
+          exact
+          path="*"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <Error404 />
             </NavbarWrapper>
           )}
         />
