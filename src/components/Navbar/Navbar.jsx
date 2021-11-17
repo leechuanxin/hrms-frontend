@@ -78,9 +78,7 @@ export default function Navbar({
             <div className="d-flex flex-column">
               <ul className={`offcanvas-body-top nav nav-pills flex-column mb-auto${isLoggedIn ? ' is-logged-in' : ''}`}>
                 <li className="nav-item">
-                  <a href="/" className="nav-link text-white" aria-current="page">
-                    Home
-                  </a>
+                  <Link className="nav-link text-white" to="/" aria-current="page">Home</Link>
                 </li>
               </ul>
             </div>
