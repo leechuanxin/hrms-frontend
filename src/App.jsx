@@ -1,101 +1,170 @@
-import './App.css';
-
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  NavLink,
 } from 'react-router-dom';
-
 import axios from 'axios';
 
-import Cart from './components/Cart.jsx';
-import Items from './components/Items.jsx';
-import ItemDetail from './components/ItemDetail.jsx';
+// CUSTOM IMPORTS
+import { hasLoginCookie, getCookie } from './modules/cookie.mjs';
+import REACT_APP_BACKEND_URL from './modules/urls.mjs';
+import './App.css';
+// component partials
+import Navbar from './components/Navbar/Navbar.jsx';
+// auth pages
+import Index from './components/Index/IndexPage.jsx';
+import Login from './components/Login/LoginPage.jsx';
+import Register from './components/Register/RegisterPage.jsx';
 
 // make sure that axios always sends the cookies to the backend server
 axios.defaults.withCredentials = true;
 
-const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3004';
+function NavbarWrapper({
+  navbarForAuth,
+  setIsAuthPage,
+  handleSetNavbar,
+  children,
+}) {
+  useEffect(() => {
+    handleSetNavbar();
+
+    if (navbarForAuth) {
+      setIsAuthPage(true);
+    } else {
+      setIsAuthPage(false);
+    }
+  }, [navbarForAuth]);
+
+  return <>{children}</>;
+}
+
+function NoNavbarWrapper({
+  navbarForAuth,
+  setIsAuthPage,
+  handleSetNoNavbar,
+  children,
+}) {
+  useEffect(() => {
+    handleSetNoNavbar();
+
+    if (navbarForAuth) {
+      setIsAuthPage(true);
+    } else {
+      setIsAuthPage(false);
+    }
+  }, [navbarForAuth]);
+
+  return <>{children}</>;
+}
 
 export default function App() {
-  const [items, setItems] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [selectedItemIndex, setSelectedItem] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(hasLoginCookie());
+  const [hasNavbar, setHasNavbar] = useState(true);
+  const [isAuthPage, setIsAuthPage] = useState(false);
+  const [, setIsJustLoggedOut] = useState(false);
+  const [username, setUsername] = useState(getCookie('username').trim());
+  const [realName, setRealName] = useState(getCookie('realName').trim().split('%20').join(' '));
+  const [userId, setUserId] = useState(Number(getCookie('userId').trim()));
 
-  useEffect(() => {
-    axios.get(`${REACT_APP_BACKEND_URL}/items`).then((result) => {
-      console.log(result);
-      setItems(result.data.items);
-    });
-  }, []);
+  // need useEffect for this?
 
-  const onDeepLink = (itemIndex) => {
-    setSelectedItem(itemIndex);
+  const handleLogoutSubmit = (event) => {
+    event.preventDefault();
+
+    axios
+      .delete(`${REACT_APP_BACKEND_URL}/logout`)
+      .then((response) => {
+        if (response.data.error) {
+          console.log('logout error:', response.data.error);
+        } else {
+          setIsLoggedIn(false);
+          setIsJustLoggedOut(true);
+          setUsername('');
+          setRealName('');
+          setUserId(0);
+        }
+      })
+      .catch((error) => {
+        // handle error
+        console.log('logout error:', error);
+      });
   };
 
-  const addToCart = (item, quantity) => {
-    const cartItem = { quantity, ...item };
-    setCart([cartItem, ...cart]);
+  const handleSetNavbar = () => {
+    setHasNavbar(true);
   };
 
-  const emptyCart = () => {
-    setCart([]);
+  const handleSetNoNavbar = () => {
+    setHasNavbar(false);
   };
 
-  const setItemDetail = (itemIndex) => {
-    setSelectedItem(itemIndex);
+  const handleSetIsLoggedIn = () => {
+    setIsLoggedIn(true);
   };
-
-  const selectedItem = items[selectedItemIndex];
 
   return (
     <Router>
-      <nav>
-        <ul>
-          <li>
-            <NavLink exact to="/" activeClassName="rr-selected-link">
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink exact to="/cart" activeClassName="rr-selected-link">
-              Cart(
-              {cart.length}
-              )
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-      <div className="container">
-        <h1 className="page-title">Wow Shopping!</h1>
-        <div className="row">
-          {/* A <Switch> looks through its children <Route>s and
+      <Navbar
+        username={username}
+        userId={userId}
+        realName={realName}
+        isLoggedIn={isLoggedIn}
+        isAuthPage={isAuthPage}
+        hasNavbar={hasNavbar}
+        handleLogoutSubmit={handleLogoutSubmit}
+      />
+      {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-          <Switch>
-            {/* give the route matching path in order of matching precedence */}
-            <Route path="/items/:id">
-              <ItemDetail
-                item={selectedItem}
-                addToCart={addToCart}
-                onDeepLink={onDeepLink}
+      <Switch>
+        {/* give the route matching path in order of matching precedence */}
+        <Route
+          path="/signup"
+          render={() => (
+            <NoNavbarWrapper
+              navbarForAuth
+              setIsAuthPage={setIsAuthPage}
+              handleSetNoNavbar={handleSetNoNavbar}
+            >
+              <Register isLoggedIn={isLoggedIn} />
+            </NoNavbarWrapper>
+          )}
+        />
+        <Route
+          path="/login"
+          render={() => (
+            <NoNavbarWrapper
+              navbarForAuth
+              setIsAuthPage={setIsAuthPage}
+              handleSetNoNavbar={handleSetNoNavbar}
+            >
+              <Login
+                isLoggedIn={isLoggedIn}
+                handleSetIsLoggedIn={handleSetIsLoggedIn}
+                setPrevUsername={setUsername}
+                setPrevRealName={setRealName}
+                setPrevUserId={setUserId}
               />
-            </Route>
-            <Route path="/cart">
-              <Cart items={cart} emptyCart={emptyCart} />
-            </Route>
-            <Route path="/">
-              <Items
-                items={items}
-                setItemDetail={setItemDetail}
-                selectedItemIndex={selectedItemIndex}
+            </NoNavbarWrapper>
+          )}
+        />
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <Index
+                isLoggedIn={isLoggedIn}
               />
-            </Route>
-          </Switch>
-        </div>
-      </div>
+            </NavbarWrapper>
+          )}
+        />
+      </Switch>
     </Router>
   );
 }

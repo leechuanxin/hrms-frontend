@@ -1,33 +1,88 @@
-nav li{
-  display:inline-block;
-  margin:0 8px;
+* {
+  box-sizing: border-box;
 }
 
-.page-title {
-  margin: 20px;
+html,
+body {
+  height: 100%;
 }
 
-.item-quantity {
-  padding: 4px;
+body {
+  min-height: 100%;
 }
 
-.items,
-.cart,
-.item-detail {
-  margin: 20px;
+.text-truncated,
+.text-truncated-parent,
+.text-truncated-parent * {
+  /* Ellipsis */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item{
-  display:inline-block;
-  padding:3px;
-  background-color:white;
-  margin:3px;
+.anchor-name {
+  display: block;
+  position: relative;
+  top: -130px;
+  visibility: hidden;
 }
 
-.rr-selected-link{
-  color:red;
+.popover {
+  z-index: 1029;
 }
 
-.selected {
-  background-color: yellow;
+.navbar-menu {
+  color: #eeeeee;
+  font-size: 1.5em;
+}
+
+.navbar-menu:hover {
+  color: #fff;
+}
+
+.offcanvas-body {
+  padding: 0;
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.offcanvas-body-top {
+  overflow-y: auto;
+  height: 100%;
+  flex-wrap: nowrap;
+}
+
+.offcanvas-body-top.is-logged-in {
+  height: calc(100% - 50px);
+}
+
+.offcanvas-body-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.offcanvas-body > div {
+  height: 100%;
+}
+
+.offcanvas-body .nav-pills .nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: 0;
+}
+
+.offcanvas-body .active.nav-link,
+.offcanvas-body .active.nav-link:hover {
+  background: #3f51b5;
+}
+
+.offcanvas-body .nav-link:hover {
+  background: #1a237e;
+}
+
+.offcanvas-header .btn-close {
+  border-radius: 50%;
 }
