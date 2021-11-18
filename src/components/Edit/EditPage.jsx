@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
+import interactionPlugin from '@fullcalendar/interaction'; // for selectable
 
 export default function EditPage() {
   const newUserId = 51;
@@ -35,8 +36,10 @@ export default function EditPage() {
       <div className="row w-100 pt-3">
         <div className="col-8 pt-1 ms-auto me-auto">
           <FullCalendar
-            plugins={[dayGridPlugin]}
+            plugins={[interactionPlugin, dayGridPlugin]}
             initialView="dayGridMonth"
+            selectable
+            editable
             events={events}
           />
         </div>
