@@ -4,9 +4,10 @@ import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 
 export default function IndexPage() {
+  const newUserId = 51;
   const [events, setEvents] = useState([
-    { title: '', date: '2021-11-03', extendedProps: { user_id: 1, real_name: 'Chuan Xin', type: 'shift' } },
-    { title: '', date: '2021-11-07', extendedProps: { user_id: 1, real_name: 'Chuan Xin', type: 'leave' } },
+    { title: '', date: '2021-11-03', extendedProps: { user_id: newUserId, real_name: 'Chuan Xin', type: 'shift' } },
+    { title: '', date: '2021-11-07', extendedProps: { user_id: newUserId, real_name: 'Chuan Xin', type: 'leave' } },
   ]);
 
   useEffect(() => {
@@ -16,16 +17,14 @@ export default function IndexPage() {
         return {
           ...event,
           title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-          backgroundColor: 'rgb(167, 243, 208)',
-          textColor: 'rgb(17, 24, 39)',
+          classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
         };
       }
 
       return {
         ...event,
         title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-        backgroundColor: 'rgb(17, 24, 39)',
-        textColor: 'rgb(249, 250, 251)',
+        classNames: ['leave-block'],
       };
     });
     setEvents(rerenderedEvents);
