@@ -18,6 +18,7 @@ import Login from './components/Login/LoginPage.jsx';
 import Register from './components/Register/RegisterPage.jsx';
 // other pages
 import Index from './components/Index/IndexPage.jsx';
+import Edit from './components/Edit/EditPage.jsx';
 import Error404 from './components/Error/Error404Page.jsx';
 
 // make sure that axios always sends the cookies to the backend server
@@ -138,6 +139,21 @@ export default function App() {
               handleSetNavbar={handleSetNavbar}
             >
               <Index
+                isLoggedIn={isLoggedIn}
+              />
+            </NavbarWrapper>
+          )}
+        />
+        <Route
+          exact
+          path="/edit"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <Edit
                 isLoggedIn={isLoggedIn}
               />
             </NavbarWrapper>
