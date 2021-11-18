@@ -34,11 +34,10 @@ export default function EditPage() {
   return (
     <div className="container-fluid pt-5">
       <div className="row w-100 pt-3">
-        <div className="col-8 pt-1 ms-auto me-auto">
+        <div className="col-12 pt-1">
           <FullCalendar
             plugins={[interactionPlugin, dayGridPlugin]}
             initialView="dayGridMonth"
-            selectable
             editable
             events={events}
           />
