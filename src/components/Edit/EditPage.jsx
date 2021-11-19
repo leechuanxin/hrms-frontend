@@ -109,10 +109,7 @@ export default function EditPage() {
     const userSelected = { ...selectedUser };
     const currentEvents = [...events];
     // get all events on selected day
-    const currentDayEvents = currentEvents.filter(
-      (currentEvent) => currentEvent.date === currentDate,
-    );
-    if (userSelected.user_id && selectedEventType.trim() !== '' && currentDayEvents.length < 1) {
+    if (userSelected.user_id && selectedEventType.trim() !== '') {
       const newEvent = {
         title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
         date: currentDate,
@@ -231,8 +228,8 @@ export default function EditPage() {
               <label htmlFor="worker">
                 <strong>Worker</strong>
               </label>
-              <Form.Select id="worker" aria-label="Select a worker" onChange={handleSelectUser}>
-                <option>Select a worker</option>
+              <Form.Select id="worker" aria-label="Select a worker" onChange={handleSelectUser} defaultValue="DEFAULT">
+                <option value="DEFAULT" disabled>Select a worker</option>
                 {users.map((user) => (
                   <option value={user.user_id} key={`user${user.user_id}`}>{user.real_name}</option>
                 ))}
@@ -243,8 +240,8 @@ export default function EditPage() {
               <label htmlFor="eventtype">
                 <strong>Event Type</strong>
               </label>
-              <Form.Select id="eventtype" aria-label="Select a schedule type" onChange={handleSelectEventType}>
-                <option>Select a event type</option>
+              <Form.Select id="eventtype" aria-label="Select an event type" onChange={handleSelectEventType} defaultValue="DEFAULT">
+                <option value="DEFAULT" disabled>Select an event type</option>
                 {eventTypes.map((eventType) => (
                   <option value={eventType} key={`eventType${eventType.charAt(0).toUpperCase() + eventType.substring(1)}`}>
                     {eventType.charAt(0).toUpperCase() + eventType.substring(1)}
@@ -306,10 +303,11 @@ export default function EditPage() {
                   (
                     (selectedEvent && selectedEvent.extendedProps)
                       ? selectedEvent.extendedProps.user_id
-                      : 1
+                      : 'DEFAULT'
                   )
                 }
               >
+                <option value="DEFAULT" disabled>Select a worker</option>
                 {users.map((user) => (
                   <option
                     value={user.user_id}
@@ -327,16 +325,17 @@ export default function EditPage() {
               </label>
               <Form.Select
                 id="eventtype"
-                aria-label="Select a schedule type"
+                aria-label="Select an event type"
                 onChange={handleSelectEventType}
                 defaultValue={
                   (
                     (selectedEvent && selectedEvent.extendedProps)
                       ? selectedEvent.extendedProps.type
-                      : 'shift'
+                      : 'DEFAULT'
                   )
                 }
               >
+                <option value="DEFAULT" disabled>Select an event type</option>
                 {eventTypes.map((eventType) => (
                   <option
                     value={eventType}
