@@ -28,15 +28,29 @@ export default function EditPage() {
       real_name: 'Akira Wong',
     },
   ]);
-  const [scheduleTypes] = useState(['shift', 'leave']);
+  const [eventTypes] = useState(['shift', 'leave']);
   const [events, setEvents] = useState([
-    { title: '', date: '2021-11-03', extendedProps: { user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift' } },
-    { title: '', date: '2021-11-07', extendedProps: { user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave' } },
+    {
+      title: '',
+      date: '2021-11-03',
+      extendedProps: {
+        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-11-03',
+      },
+    },
+    {
+      title: '',
+      date: '2021-11-07',
+      extendedProps: {
+        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-11-07',
+      },
+    },
   ]);
   const [currentDate, setCurrentDate] = useState('');
-  const [showFirstModal, setShowFirstModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedScheduleType, setSelectedScheduleType] = useState('');
+  const [selectedEventType, setSelectedEventType] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     const newEvents = [...events];
@@ -60,15 +74,32 @@ export default function EditPage() {
     setEvents(rerenderedEvents);
   }, []);
 
-  const handleCloseFirstModal = () => {
+  const handleCloseAddModal = () => {
     setCurrentDate('');
-    setShowFirstModal(false);
     setSelectedUser(null);
-    setSelectedScheduleType('');
+    setSelectedEventType('');
+    setShowAddModal(false);
   };
-  const handleShowFirstModal = (arg) => {
+  const handleShowAddModal = (arg) => {
     setCurrentDate(arg.dateStr);
-    setShowFirstModal(true);
+    setShowAddModal(true);
+  };
+
+  const handleCloseEditDeleteModal = () => {
+    setSelectedEvent(null);
+    setShowEditDeleteModal(false);
+  };
+
+  const handleShowEditDeleteModal = (info) => {
+    console.log(info);
+    const eventObj = {
+      title: info.title,
+      extendedProps: {
+        ...info.extendedProps,
+      },
+    };
+    setSelectedEvent(eventObj);
+    setShowEditDeleteModal(true);
   };
 
   const handleModalSubmit = () => {
@@ -78,23 +109,25 @@ export default function EditPage() {
     const currentDayEvents = currentEvents.filter(
       (currentEvent) => currentEvent.date === currentDate,
     );
-    if (userSelected.user_id && selectedScheduleType.trim() !== '' && currentDayEvents.length < 1) {
+    if (userSelected.user_id && selectedEventType.trim() !== '' && currentDayEvents.length < 1) {
       const newEvent = {
-        title: `${userSelected.real_name}'s ${selectedScheduleType.substring(0, 1).toUpperCase()}${selectedScheduleType.substring(1)}`,
+        title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
         date: currentDate,
-        classNames: (selectedScheduleType === 'shift')
+        classNames: (selectedEventType === 'shift')
           ? [`shift-block-${Number(userSelected.user_id) % 50}`]
           : ['leave-block'],
         extendedProps: {
+          id: currentEvents.length + 1,
           user_id: userSelected.user_id,
           real_name: userSelected.real_name,
-          type: selectedScheduleType,
+          type: selectedEventType,
+          date: currentDate,
         },
       };
       setEvents((oldEvents) => ([...oldEvents, newEvent]));
     }
 
-    handleCloseFirstModal();
+    handleCloseAddModal();
   };
 
   const handleSelectUser = (e) => {
@@ -102,9 +135,16 @@ export default function EditPage() {
     setSelectedUser(selected);
   };
 
-  const handleSelectScheduleType = (e) => {
-    const selected = scheduleTypes.filter((scheduleType) => scheduleType === e.target.value)[0];
-    setSelectedScheduleType(selected);
+  const handleSelectEventType = (e) => {
+    const selected = eventTypes.filter((eventType) => eventType === e.target.value)[0];
+    setSelectedEventType(selected);
+  };
+
+  const handleDeleteEvent = () => {
+    setEvents((newEvents) => [...newEvents].filter(
+      (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
+    ));
+    handleCloseEditDeleteModal();
   };
 
   return (
@@ -116,11 +156,12 @@ export default function EditPage() {
             initialView="dayGridMonth"
             editable
             selectable
-            dateClick={handleShowFirstModal}
+            dateClick={handleShowAddModal}
+            eventClick={(info) => handleShowEditDeleteModal(info.event)}
             events={events}
           />
         </div>
-        <Modal show={showFirstModal} onHide={setShowFirstModal}>
+        <Modal show={showAddModal} onHide={setShowAddModal}>
           <Modal.Header closeButton>
             <Modal.Title>Add Schedule</Modal.Title>
           </Modal.Header>
@@ -138,25 +179,44 @@ export default function EditPage() {
               <div className="invalid-feedback">Test</div>
             </div>
             <div className="col-12 mb-3">
-              <label htmlFor="scheduletype">
+              <label htmlFor="eventtype">
                 <strong>Schedule Type</strong>
               </label>
-              <Form.Select id="scheduletype" aria-label="Select a schedule type" onChange={handleSelectScheduleType}>
+              <Form.Select id="eventtype" aria-label="Select a schedule type" onChange={handleSelectEventType}>
                 <option>Select a schedule type</option>
-                {scheduleTypes.map((scheduleType) => (
-                  <option value={scheduleType} key={`scheduleType${scheduleType.charAt(0).toUpperCase() + scheduleType.substring(1)}`}>
-                    {scheduleType.charAt(0).toUpperCase() + scheduleType.substring(1)}
+                {eventTypes.map((eventType) => (
+                  <option value={eventType} key={`eventType${eventType.charAt(0).toUpperCase() + eventType.substring(1)}`}>
+                    {eventType.charAt(0).toUpperCase() + eventType.substring(1)}
                   </option>
                 ))}
               </Form.Select>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseFirstModal}>
+            <Button variant="secondary" onClick={handleCloseAddModal}>
               Close
             </Button>
             <Button variant="primary" onClick={handleModalSubmit}>
               Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showEditDeleteModal} onHide={setShowEditDeleteModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit or Delete Event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Do you want to edit or delete this event?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={handleDeleteEvent}>
+              Delete
+            </Button>
+            <Button variant="primary" onClick={handleCloseEditDeleteModal}>
+              Edit
+            </Button>
+            <Button variant="secondary" onClick={handleCloseEditDeleteModal}>
+              Close
             </Button>
           </Modal.Footer>
         </Modal>
