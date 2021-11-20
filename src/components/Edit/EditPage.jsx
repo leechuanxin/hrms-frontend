@@ -148,6 +148,30 @@ export default function EditPage() {
     setSelectedEventType(selected);
   };
 
+  const handleMoveEvent = (event) => {
+    // set new date
+    // copy over other props
+    const eventObj = {
+      title: event.title,
+      extendedProps: {
+        ...event.extendedProps,
+        date: event.startStr,
+      },
+      date: event.startStr,
+      classNames: [...event.classNames],
+    };
+
+    const newEvents = [...events].filter(
+      (filteredEvent) => (filteredEvent.extendedProps.id !== eventObj.extendedProps.id),
+    );
+    newEvents.push(eventObj);
+    setEvents([...newEvents]);
+  };
+
+  const handleEventClick = (info) => handleShowEditDeleteModal(info.event);
+
+  const handleEventDrop = (info) => handleMoveEvent(info.event);
+
   const handleDeleteEvent = () => {
     setEvents((newEvents) => [...newEvents].filter(
       (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
@@ -222,7 +246,8 @@ export default function EditPage() {
             editable
             selectable
             dateClick={handleShowAddModal}
-            eventClick={(info) => handleShowEditDeleteModal(info.event)}
+            eventClick={handleEventClick}
+            eventDrop={handleEventDrop}
             events={events}
           />
         </div>
