@@ -1,9 +1,12 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
+// CUSTOM IMPORTS
+import AdminAddEventModal from './Modals/AdminAddEventModal.jsx';
+import AdminEditDeleteEventModal from './Modals/AdminEditDeleteEventModal.jsx';
+import AdminEditEventModal from './Modals/AdminEditEventModal.jsx';
 
 export default function EditPage() {
   const [users] = useState([
@@ -92,6 +95,11 @@ export default function EditPage() {
 
   const handleCloseEditDeleteModal = () => {
     setShowEditDeleteModal(false);
+  };
+
+  const handleClearEventAndCloseEditDeleteModal = () => {
+    handleClearSelectedEvent();
+    handleCloseEditDeleteModal();
   };
 
   const handleShowEditDeleteModal = (info) => {
@@ -219,143 +227,33 @@ export default function EditPage() {
           />
         </div>
         {/* Add Modal */}
-        <Modal show={showAddModal} onHide={setShowAddModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Event</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="col-12 mb-3">
-              <label htmlFor="worker">
-                <strong>Worker</strong>
-              </label>
-              <Form.Select id="worker" aria-label="Select a worker" onChange={handleSelectUser} defaultValue="DEFAULT">
-                <option value="DEFAULT" disabled>Select a worker</option>
-                {users.map((user) => (
-                  <option value={user.user_id} key={`user${user.user_id}`}>{user.real_name}</option>
-                ))}
-              </Form.Select>
-              <div className="invalid-feedback">Test</div>
-            </div>
-            <div className="col-12 mb-3">
-              <label htmlFor="eventtype">
-                <strong>Event Type</strong>
-              </label>
-              <Form.Select id="eventtype" aria-label="Select an event type" onChange={handleSelectEventType} defaultValue="DEFAULT">
-                <option value="DEFAULT" disabled>Select an event type</option>
-                {eventTypes.map((eventType) => (
-                  <option value={eventType} key={`eventType${eventType.charAt(0).toUpperCase() + eventType.substring(1)}`}>
-                    {eventType.charAt(0).toUpperCase() + eventType.substring(1)}
-                  </option>
-                ))}
-              </Form.Select>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseAddModal}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={handleModalAddSubmit}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <AdminAddEventModal
+          users={users}
+          eventTypes={eventTypes}
+          showModal={showAddModal}
+          onHideModal={handleCloseAddModal}
+          handleSelectUser={handleSelectUser}
+          handleSelectEventType={handleSelectEventType}
+          handleSubmit={handleModalAddSubmit}
+        />
         {/* Edit / Delete Modal */}
-        <Modal show={showEditDeleteModal} onHide={setShowEditDeleteModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Edit or Delete Event</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            Do you want to edit or delete this event?
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger" onClick={handleDeleteEvent}>
-              Delete
-            </Button>
-            <Button variant="primary" onClick={handleShowEditModal}>
-              Edit
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                handleClearSelectedEvent();
-                handleCloseEditDeleteModal();
-              }}
-            >
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <AdminEditDeleteEventModal
+          showModal={showEditDeleteModal}
+          onHideModal={handleClearEventAndCloseEditDeleteModal}
+          handleDeleteEvent={handleDeleteEvent}
+          handleShowEditModal={handleShowEditModal}
+        />
         {/* Edit Modal */}
-        <Modal show={showEditModal} onHide={setShowEditModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Edit Event</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="col-12 mb-3">
-              <label htmlFor="worker">
-                <strong>Worker</strong>
-              </label>
-              <Form.Select
-                id="worker"
-                aria-label="Select a worker"
-                onChange={handleSelectUser}
-                defaultValue={
-                  (
-                    (selectedEvent && selectedEvent.extendedProps)
-                      ? selectedEvent.extendedProps.user_id
-                      : 'DEFAULT'
-                  )
-                }
-              >
-                <option value="DEFAULT" disabled>Select a worker</option>
-                {users.map((user) => (
-                  <option
-                    value={user.user_id}
-                    key={`user${user.user_id}`}
-                  >
-                    {user.real_name}
-                  </option>
-                ))}
-              </Form.Select>
-              <div className="invalid-feedback">Test</div>
-            </div>
-            <div className="col-12 mb-3">
-              <label htmlFor="eventtype">
-                <strong>Event Type</strong>
-              </label>
-              <Form.Select
-                id="eventtype"
-                aria-label="Select an event type"
-                onChange={handleSelectEventType}
-                defaultValue={
-                  (
-                    (selectedEvent && selectedEvent.extendedProps)
-                      ? selectedEvent.extendedProps.type
-                      : 'DEFAULT'
-                  )
-                }
-              >
-                <option value="DEFAULT" disabled>Select an event type</option>
-                {eventTypes.map((eventType) => (
-                  <option
-                    value={eventType}
-                    key={`eventType${eventType.charAt(0).toUpperCase() + eventType.substring(1)}`}
-                  >
-                    {eventType.charAt(0).toUpperCase() + eventType.substring(1)}
-                  </option>
-                ))}
-              </Form.Select>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseEditModal}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={handleEditSubmit}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <AdminEditEventModal
+          users={users}
+          eventTypes={eventTypes}
+          selectedEvent={selectedEvent}
+          showModal={showEditModal}
+          onHideModal={handleCloseEditModal}
+          handleSelectUser={handleSelectUser}
+          handleSelectEventType={handleSelectEventType}
+          handleSubmit={handleEditSubmit}
+        />
         <div className="col-12 pt-3" />
       </div>
     </div>
