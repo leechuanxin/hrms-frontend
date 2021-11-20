@@ -9,8 +9,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 export default function IndexPage() {
   const newUserId = 51;
   const [events, setEvents] = useState([
-    { title: '', date: '2021-11-03', extendedProps: { user_id: newUserId, real_name: 'Chuan Xin', type: 'shift' } },
-    { title: '', date: '2021-11-07', extendedProps: { user_id: newUserId, real_name: 'Chuan Xin', type: 'leave' } },
+    { title: '', date: '2021-11-03', extendedProps: { user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'shift' } },
+    { title: '', date: '2021-11-07', extendedProps: { user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'leave' } },
   ]);
 
   useEffect(() => {
