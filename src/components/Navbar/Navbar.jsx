@@ -80,6 +80,12 @@ export default function Navbar({
                 <li className="nav-item">
                   <Link className="nav-link text-white" to="/" aria-current="page">Home</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-white" to="/" aria-current="page">Worker</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-white" to="/admin" aria-current="page">Admin</Link>
+                </li>
               </ul>
             </div>
           </Offcanvas.Body>
