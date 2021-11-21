@@ -9,12 +9,22 @@ export default function WorkerIndexPage() {
     { title: '', date: '2021-12-07', extendedProps: { user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave' } },
   ]);
 
-  const getNextMonthDate = (date) => {
-    const nextMonthNumber = date.getMonth() + 1;
-    const nextMonthDate = new Date(date.getFullYear(), nextMonthNumber, 1);
-    return nextMonthDate;
+  const getMonthDate = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const month = (type === 'next') ? nextMonth : currentMonth;
+    const year = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
+    const monthDate = new Date(year, month, 1);
+    return monthDate;
   };
-  const [nextMonthDate] = useState(getNextMonthDate(new Date()));
+
+  const getMonthString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
+    const monthDateStr = formatter.format(date);
+    return monthDateStr;
+  };
+  const [currentMonthDate] = useState(getMonthDate(new Date(), 'current'));
+  const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
 
   useEffect(() => {
     const newEvents = [...events];
@@ -59,7 +69,11 @@ export default function WorkerIndexPage() {
               <use xlinkHref="#exclamation-triangle-fill" />
             </svg>
             <div>
-              Schedule for December is out! Click here
+              Schedule for
+              {' '}
+              {getMonthString(currentMonthDate)}
+              {' '}
+              is out! Click here
             </div>
           </div>
         </div>
