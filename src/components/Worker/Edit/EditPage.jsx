@@ -5,32 +5,16 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
 // CUSTOM IMPORTS
 import WorkerAddEventModal from './Modals/WorkerAddEventModal.jsx';
-import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
-import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
+// import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
+// import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
 
 export default function WorkerEditPage() {
-  const [users] = useState([
+  const [user] = useState(
     {
       user_id: 1,
       real_name: 'Lee Chuan Xin',
     },
-    {
-      user_id: 2,
-      real_name: 'Wong Shen Nan',
-    },
-    {
-      user_id: 3,
-      real_name: 'Chiew Jia En',
-    },
-    {
-      user_id: 4,
-      real_name: 'Justin Wong',
-    },
-    {
-      user_id: 5,
-      real_name: 'Akira Wong',
-    },
-  ]);
+  );
   const [eventTypes] = useState(['shift', 'leave']);
   const [events, setEvents] = useState([
     {
@@ -50,11 +34,11 @@ export default function WorkerEditPage() {
   ]);
   const [currentDate, setCurrentDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [, setShowEditDeleteModal] = useState(false);
+  // const [showEditModal, setShowEditModal] = useState(false);
+  const [, setSelectedUser] = useState(null);
   const [selectedEventType, setSelectedEventType] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     const newEvents = [...events];
@@ -89,18 +73,18 @@ export default function WorkerEditPage() {
     setShowAddModal(true);
   };
 
-  const handleClearSelectedEvent = () => {
-    setSelectedEvent(null);
-  };
+  // const handleClearSelectedEvent = () => {
+  //   setSelectedEvent(null);
+  // };
 
-  const handleCloseEditDeleteModal = () => {
-    setShowEditDeleteModal(false);
-  };
+  // const handleCloseEditDeleteModal = () => {
+  //   setShowEditDeleteModal(false);
+  // };
 
-  const handleClearEventAndCloseEditDeleteModal = () => {
-    handleClearSelectedEvent();
-    handleCloseEditDeleteModal();
-  };
+  // const handleClearEventAndCloseEditDeleteModal = () => {
+  //   handleClearSelectedEvent();
+  //   handleCloseEditDeleteModal();
+  // };
 
   const handleShowEditDeleteModal = (info) => {
     const eventObj = {
@@ -114,20 +98,19 @@ export default function WorkerEditPage() {
   };
 
   const handleModalAddSubmit = () => {
-    const userSelected = { ...selectedUser };
     const currentEvents = [...events];
     // get all events on selected day
-    if (userSelected.user_id && selectedEventType.trim() !== '') {
+    if (selectedEventType.trim() !== '') {
       const newEvent = {
-        title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
+        title: `${user.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
         date: currentDate,
         classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(userSelected.user_id) % 50}`]
+          ? [`shift-block-${Number(user.user_id) % 50}`]
           : ['leave-block'],
         extendedProps: {
           id: currentEvents.length + 1,
-          user_id: userSelected.user_id,
-          real_name: userSelected.real_name,
+          user_id: user.user_id,
+          real_name: user.real_name,
           type: selectedEventType,
           date: currentDate,
         },
@@ -138,10 +121,10 @@ export default function WorkerEditPage() {
     handleCloseAddModal();
   };
 
-  const handleSelectUser = (e) => {
-    const selected = users.filter((user) => user.user_id === Number(e.target.value))[0];
-    setSelectedUser(selected);
-  };
+  // const handleSelectUser = (e) => {
+  //   const selected = users.filter((user) => user.user_id === Number(e.target.value))[0];
+  //   setSelectedUser(selected);
+  // };
 
   const handleSelectEventType = (e) => {
     const selected = eventTypes.filter((eventType) => eventType === e.target.value)[0];
@@ -172,69 +155,70 @@ export default function WorkerEditPage() {
 
   const handleEventDrop = (info) => handleMoveEvent(info.event);
 
-  const handleDeleteEvent = () => {
-    setEvents((newEvents) => [...newEvents].filter(
-      (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
-    ));
-    handleClearSelectedEvent();
-    handleCloseEditDeleteModal();
-  };
+  // const handleDeleteEvent = () => {
+  //   setEvents((newEvents) => [...newEvents].filter(
+  //     (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
+  //   ));
+  //   handleClearSelectedEvent();
+  //   handleCloseEditDeleteModal();
+  // };
 
-  const handleShowEditModal = () => {
-    handleCloseEditDeleteModal();
-    setSelectedUser(
-      (selectedEvent && selectedEvent.extendedProps)
-        ? {
-          user_id: selectedEvent.extendedProps.user_id,
-          real_name: selectedEvent.extendedProps.real_name,
-        }
-        : {
-          ...users[0],
-        },
-    );
-    setSelectedEventType(
-      (selectedEvent && selectedEvent.extendedProps)
-        ? selectedEvent.extendedProps.type
-        : eventTypes[0],
-    );
-    setShowEditModal(true);
-  };
+  // const handleShowEditModal = () => {
+  //   handleCloseEditDeleteModal();
+  //   setSelectedUser(
+  //     (selectedEvent && selectedEvent.extendedProps)
+  //       ? {
+  //         user_id: selectedEvent.extendedProps.user_id,
+  //         real_name: selectedEvent.extendedProps.real_name,
+  //       }
+  //       : {
+  //         ...users[0],
+  //       },
+  //   );
+  //   setSelectedEventType(
+  //     (selectedEvent && selectedEvent.extendedProps)
+  //       ? selectedEvent.extendedProps.type
+  //       : eventTypes[0],
+  //   );
+  //   setShowEditModal(true);
+  // };
 
-  const handleCloseEditModal = () => {
-    handleClearSelectedEvent();
-    setCurrentDate('');
-    setSelectedUser(null);
-    setSelectedEventType('');
-    setShowEditModal(false);
-  };
+  // const handleCloseEditModal = () => {
+  //   handleClearSelectedEvent();
+  //   setCurrentDate('');
+  //   setSelectedUser(null);
+  //   setSelectedEventType('');
+  //   setShowEditModal(false);
+  // };
 
-  const handleEditSubmit = () => {
-    const userSelected = { ...selectedUser };
-    if (userSelected.user_id && selectedEventType.trim() !== '') {
-      const modifiedEvent = {
-        title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
-        date: selectedEvent.extendedProps.date,
-        classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(userSelected.user_id) % 50}`]
-          : ['leave-block'],
-        extendedProps: {
-          id: selectedEvent.extendedProps.id,
-          user_id: userSelected.user_id,
-          real_name: userSelected.real_name,
-          type: selectedEventType,
-          date: selectedEvent.extendedProps.date,
-        },
-      };
-      setEvents((oldEvents) => [
-        ...oldEvents.filter(
-          (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
-        ),
-        { ...modifiedEvent },
-      ]);
-    }
+  // const handleEditSubmit = () => {
+  //   const userSelected = { ...selectedUser };
+  //   if (userSelected.user_id && selectedEventType.trim() !== '') {
+  //     const modifiedEvent = {
+  //       title: `${userSelected.real_name}'s ` +
+  // `${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
+  //       date: selectedEvent.extendedProps.date,
+  //       classNames: (selectedEventType === 'shift')
+  //         ? [`shift-block-${Number(userSelected.user_id) % 50}`]
+  //         : ['leave-block'],
+  //       extendedProps: {
+  //         id: selectedEvent.extendedProps.id,
+  //         user_id: userSelected.user_id,
+  //         real_name: userSelected.real_name,
+  //         type: selectedEventType,
+  //         date: selectedEvent.extendedProps.date,
+  //       },
+  //     };
+  //     setEvents((oldEvents) => [
+  //       ...oldEvents.filter(
+  //         (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
+  //       ),
+  //       { ...modifiedEvent },
+  //     ]);
+  //   }
 
-    handleCloseEditModal();
-  };
+  //   handleCloseEditModal();
+  // };
 
   return (
     <div className="container-fluid pt-5">
@@ -253,24 +237,22 @@ export default function WorkerEditPage() {
         </div>
         {/* Add Modal */}
         <WorkerAddEventModal
-          users={users}
           eventTypes={eventTypes}
           showModal={showAddModal}
           onHideModal={handleCloseAddModal}
-          handleSelectUser={handleSelectUser}
           handleSelectEventType={handleSelectEventType}
           handleSubmit={handleModalAddSubmit}
         />
         {/* Edit / Delete Modal */}
-        <WorkerEditDeleteEventModal
+        {/* <WorkerEditDeleteEventModal
           showModal={showEditDeleteModal}
           onHideModal={handleClearEventAndCloseEditDeleteModal}
           handleDeleteEvent={handleDeleteEvent}
           handleShowEditModal={handleShowEditModal}
-        />
+        /> */}
         {/* Edit Modal */}
-        <WorkerEditEventModal
-          users={users}
+        {/* <WorkerEditEventModal
+          user={user}
           eventTypes={eventTypes}
           selectedEvent={selectedEvent}
           showModal={showEditModal}
@@ -278,7 +260,7 @@ export default function WorkerEditPage() {
           handleSelectUser={handleSelectUser}
           handleSelectEventType={handleSelectEventType}
           handleSubmit={handleEditSubmit}
-        />
+        /> */}
         <div className="col-12 pt-3" />
       </div>
     </div>
