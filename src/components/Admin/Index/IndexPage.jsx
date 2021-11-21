@@ -6,7 +6,7 @@ import {
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 
-export default function IndexPage() {
+export default function AdminIndexPage() {
   const newUserId = 51;
   const [events, setEvents] = useState([
     { title: '', date: '2021-12-03', extendedProps: { user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'shift' } },

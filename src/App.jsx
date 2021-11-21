@@ -16,9 +16,12 @@ import Navbar from './components/Navbar/Navbar.jsx';
 // auth pages
 import Login from './components/Login/LoginPage.jsx';
 import Register from './components/Register/RegisterPage.jsx';
-// other pages
-import Index from './components/Index/IndexPage.jsx';
+// admin pages
+import AdminIndex from './components/Admin/Index/IndexPage.jsx';
 import Edit from './components/Admin/Edit/EditPage.jsx';
+// worker pages
+import WorkerIndex from './components/Worker/Index/IndexPage.jsx';
+// other pages
 import Error404 from './components/Error/Error404Page.jsx';
 
 // make sure that axios always sends the cookies to the backend server
@@ -129,16 +132,33 @@ export default function App() {
             </NavbarWrapper>
           )}
         />
+        {/* WORKER ROUTES */}
         <Route
           exact
-          path="/"
+          path={['/worker', '/']}
           render={() => (
             <NavbarWrapper
               navbarForAuth={false}
               setIsAuthPage={setIsAuthPage}
               handleSetNavbar={handleSetNavbar}
             >
-              <Index
+              <WorkerIndex
+                isLoggedIn={isLoggedIn}
+              />
+            </NavbarWrapper>
+          )}
+        />
+        {/* ADMIN ROUTES */}
+        <Route
+          exact
+          path="/admin"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <AdminIndex
                 isLoggedIn={isLoggedIn}
               />
             </NavbarWrapper>
@@ -159,6 +179,7 @@ export default function App() {
             </NavbarWrapper>
           )}
         />
+        {/* ALL OTHERS */}
         <Route
           exact
           path="*"
