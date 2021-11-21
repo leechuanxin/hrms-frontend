@@ -6,12 +6,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
 
 function AdminOptimiseSelectedUser({ user }) {
-  console.log('AdminOptimiseSelectedUser');
-  console.log(user);
   if (user && user.user_id) {
     const items = Object.entries(user).filter((item) => (item[0] !== 'real_name' && item[0] !== 'user_id'));
-    console.log(items);
-    console.log('render selected user');
     return (
       <div className="card w-100">
         <div className="card-header text-center">
@@ -175,9 +171,6 @@ export default function AdminOptimisePage() {
   const handleRadioChange = (event) => {
     setSelectedOption(event.target.value);
   };
-
-  console.log('selectedUser:');
-  console.log(selectedUser);
 
   return (
     <div className="container-fluid pt-5">
