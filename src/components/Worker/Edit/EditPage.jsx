@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction'; // for selectable
 // CUSTOM IMPORTS
 import WorkerAddEventModal from './Modals/WorkerAddEventModal.jsx';
 import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
-// import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
+import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
 
 export default function WorkerEditPage() {
   const [user] = useState(
@@ -21,21 +21,21 @@ export default function WorkerEditPage() {
       title: '',
       date: '2021-12-03',
       extendedProps: {
-        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-11-03',
+        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
       },
     },
     {
       title: '',
       date: '2021-12-07',
       extendedProps: {
-        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-11-07',
+        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
       },
     },
   ]);
   const [selectedDate, setSelectedDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
-  // const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const getMonthDate = (date, type) => {
@@ -175,51 +175,50 @@ export default function WorkerEditPage() {
     handleCloseEditDeleteModal();
   };
 
-  // const handleShowEditModal = () => {
-  //   handleCloseEditDeleteModal();
-  //   setSelectedEventType(
-  //     (selectedEvent && selectedEvent.extendedProps)
-  //       ? selectedEvent.extendedProps.type
-  //       : eventTypes[0],
-  //   );
-  //   setShowEditModal(true);
-  // };
+  const handleShowEditModal = () => {
+    handleCloseEditDeleteModal();
+    setSelectedEventType(
+      (selectedEvent && selectedEvent.extendedProps)
+        ? selectedEvent.extendedProps.type
+        : eventTypes[0],
+    );
+    setShowEditModal(true);
+  };
 
-  // const handleCloseEditModal = () => {
-  //   handleClearSelectedEvent();
-  //   setSelectedDate('');
-  //   setSelectedEventType('');
-  //   setShowEditModal(false);
-  // };
+  const handleCloseEditModal = () => {
+    handleClearSelectedEvent();
+    setSelectedDate('');
+    setSelectedEventType('');
+    setShowEditModal(false);
+  };
 
-  // const handleEditSubmit = () => {
-  //   const userSelected = { ...selectedUser };
-  //   if (userSelected.user_id && selectedEventType.trim() !== '') {
-  //     const modifiedEvent = {
-  //       title: `${selectedEventType.substring(0, 1).toUpperCase()}`
-  // + `${selectedEventType.substring(1)}`,
-  //       date: selectedEvent.extendedProps.date,
-  //       classNames: (selectedEventType === 'shift')
-  //         ? [`shift-block-${Number(userSelected.user_id) % 50}`]
-  //         : ['leave-block'],
-  //       extendedProps: {
-  //         id: selectedEvent.extendedProps.id,
-  //         user_id: userSelected.user_id,
-  //         real_name: userSelected.real_name,
-  //         type: selectedEventType,
-  //         date: selectedEvent.extendedProps.date,
-  //       },
-  //     };
-  //     setEvents((oldEvents) => [
-  //       ...oldEvents.filter(
-  //         (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
-  //       ),
-  //       { ...modifiedEvent },
-  //     ]);
-  //   }
+  const handleEditSubmit = () => {
+    if (selectedEventType.trim() !== '') {
+      const modifiedEvent = {
+        title: `${selectedEventType.substring(0, 1).toUpperCase()}`
+          + `${selectedEventType.substring(1)}`,
+        date: selectedEvent.extendedProps.date,
+        classNames: (selectedEventType === 'shift')
+          ? [`shift-block-${Number(user.user_id) % 50}`]
+          : ['leave-block'],
+        extendedProps: {
+          id: selectedEvent.extendedProps.id,
+          user_id: user.user_id,
+          real_name: user.real_name,
+          type: selectedEventType,
+          date: selectedEvent.extendedProps.date,
+        },
+      };
+      setEvents((oldEvents) => [
+        ...oldEvents.filter(
+          (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
+        ),
+        { ...modifiedEvent },
+      ]);
+    }
 
-  //   handleCloseEditModal();
-  // };
+    handleCloseEditModal();
+  };
 
   return (
     <div className="container-fluid pt-5">
@@ -259,19 +258,17 @@ export default function WorkerEditPage() {
           showModal={showEditDeleteModal}
           onHideModal={handleClearEventAndCloseEditDeleteModal}
           handleDeleteEvent={handleDeleteEvent}
-          // handleShowEditModal={handleShowEditModal}
+          handleShowEditModal={handleShowEditModal}
         />
         {/* Edit Modal */}
-        {/* <WorkerEditEventModal
-          user={user}
+        <WorkerEditEventModal
           eventTypes={eventTypes}
           selectedEvent={selectedEvent}
           showModal={showEditModal}
           onHideModal={handleCloseEditModal}
-          handleSelectUser={handleSelectUser}
           handleSelectEventType={handleSelectEventType}
           handleSubmit={handleEditSubmit}
-        /> */}
+        />
         <div className="col-12 pt-3" />
       </div>
     </div>
