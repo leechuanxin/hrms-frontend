@@ -18,9 +18,10 @@ import Login from './components/Login/LoginPage.jsx';
 import Register from './components/Register/RegisterPage.jsx';
 // admin pages
 import AdminIndex from './components/Admin/Index/IndexPage.jsx';
-import Edit from './components/Admin/Edit/EditPage.jsx';
+import AdminEdit from './components/Admin/Edit/EditPage.jsx';
 // worker pages
 import WorkerIndex from './components/Worker/Index/IndexPage.jsx';
+import WorkerEdit from './components/Worker/Edit/EditPage.jsx';
 // other pages
 import Error404 from './components/Error/Error404Page.jsx';
 
@@ -148,6 +149,21 @@ export default function App() {
             </NavbarWrapper>
           )}
         />
+        <Route
+          exact
+          path="/workeredit"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <WorkerEdit
+                isLoggedIn={isLoggedIn}
+              />
+            </NavbarWrapper>
+          )}
+        />
         {/* ADMIN ROUTES */}
         <Route
           exact
@@ -173,7 +189,7 @@ export default function App() {
               setIsAuthPage={setIsAuthPage}
               handleSetNavbar={handleSetNavbar}
             >
-              <Edit
+              <AdminEdit
                 isLoggedIn={isLoggedIn}
               />
             </NavbarWrapper>
