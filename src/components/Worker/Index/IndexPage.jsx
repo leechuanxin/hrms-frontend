@@ -32,14 +32,14 @@ export default function WorkerIndexPage() {
       if (event.extendedProps.type === 'shift') {
         return {
           ...event,
-          title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
+          title: `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
           classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
         };
       }
 
       return {
         ...event,
-        title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
+        title: `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
         classNames: ['leave-block'],
       };
     });
