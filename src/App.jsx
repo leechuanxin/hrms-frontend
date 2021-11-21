@@ -19,6 +19,7 @@ import Register from './components/Register/RegisterPage.jsx';
 // admin pages
 import AdminIndex from './components/Admin/Index/IndexPage.jsx';
 import AdminEdit from './components/Admin/Edit/EditPage.jsx';
+import AdminOptimise from './components/Admin/Optimise/OptimisePage.jsx';
 // worker pages
 import WorkerIndex from './components/Worker/Index/IndexPage.jsx';
 import WorkerEdit from './components/Worker/Edit/EditPage.jsx';
@@ -175,6 +176,21 @@ export default function App() {
               handleSetNavbar={handleSetNavbar}
             >
               <AdminIndex
+                isLoggedIn={isLoggedIn}
+              />
+            </NavbarWrapper>
+          )}
+        />
+        <Route
+          exact
+          path="/adminoptimise"
+          render={() => (
+            <NavbarWrapper
+              navbarForAuth={false}
+              setIsAuthPage={setIsAuthPage}
+              handleSetNavbar={handleSetNavbar}
+            >
+              <AdminOptimise
                 isLoggedIn={isLoggedIn}
               />
             </NavbarWrapper>

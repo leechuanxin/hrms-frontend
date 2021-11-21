@@ -47,6 +47,13 @@ export default function EditPage() {
         id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-11-07',
       },
     },
+    {
+      title: '',
+      date: '2021-11-08',
+      extendedProps: {
+        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-11-08',
+      },
+    },
   ]);
   const [currentDate, setCurrentDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
