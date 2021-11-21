@@ -78,13 +78,13 @@ export default function Navbar({
             <div className="d-flex flex-column">
               <ul className={`offcanvas-body-top nav nav-pills flex-column mb-auto${isLoggedIn ? ' is-logged-in' : ''}`}>
                 <li className="nav-item">
-                  <Link className="nav-link text-white" to="/" aria-current="page">Home</Link>
+                  <Link className="nav-link text-white" to="/" aria-current="page" onClick={handleCloseOffCanvas}>Home</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link text-white" to="/" aria-current="page">Worker</Link>
+                  <Link className="nav-link text-white" to="/" aria-current="page" onClick={handleCloseOffCanvas}>Worker</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link text-white" to="/admin" aria-current="page">Admin</Link>
+                  <Link className="nav-link text-white" to="/admin" aria-current="page" onClick={handleCloseOffCanvas}>Admin</Link>
                 </li>
               </ul>
             </div>
