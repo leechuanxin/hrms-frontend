@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
 // CUSTOM IMPORTS
 import WorkerAddEventModal from './Modals/WorkerAddEventModal.jsx';
-// import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
+import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
 // import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
 
 export default function WorkerEditPage() {
@@ -34,11 +34,10 @@ export default function WorkerEditPage() {
   ]);
   const [selectedDate, setSelectedDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [, setShowEditDeleteModal] = useState(false);
+  const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
   // const [showEditModal, setShowEditModal] = useState(false);
-  const [, setSelectedUser] = useState(null);
   const [selectedEventType, setSelectedEventType] = useState('');
-  const [, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const getMonthDate = (date, type) => {
     const currentMonth = date.getMonth();
     const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
@@ -83,7 +82,6 @@ export default function WorkerEditPage() {
 
   const handleCloseAddModal = () => {
     setSelectedDate('');
-    setSelectedUser(null);
     setSelectedEventType('');
     setShowAddModal(false);
   };
@@ -92,18 +90,18 @@ export default function WorkerEditPage() {
     setShowAddModal(true);
   };
 
-  // const handleClearSelectedEvent = () => {
-  //   setSelectedEvent(null);
-  // };
+  const handleClearSelectedEvent = () => {
+    setSelectedEvent(null);
+  };
 
-  // const handleCloseEditDeleteModal = () => {
-  //   setShowEditDeleteModal(false);
-  // };
+  const handleCloseEditDeleteModal = () => {
+    setShowEditDeleteModal(false);
+  };
 
-  // const handleClearEventAndCloseEditDeleteModal = () => {
-  //   handleClearSelectedEvent();
-  //   handleCloseEditDeleteModal();
-  // };
+  const handleClearEventAndCloseEditDeleteModal = () => {
+    handleClearSelectedEvent();
+    handleCloseEditDeleteModal();
+  };
 
   const handleShowEditDeleteModal = (info) => {
     const eventObj = {
@@ -140,11 +138,6 @@ export default function WorkerEditPage() {
     handleCloseAddModal();
   };
 
-  // const handleSelectUser = (e) => {
-  //   const selected = users.filter((user) => user.user_id === Number(e.target.value))[0];
-  //   setSelectedUser(selected);
-  // };
-
   const handleSelectEventType = (e) => {
     const selected = eventTypes.filter((eventType) => eventType === e.target.value)[0];
     setSelectedEventType(selected);
@@ -174,26 +167,16 @@ export default function WorkerEditPage() {
 
   const handleEventDrop = (info) => handleMoveEvent(info.event);
 
-  // const handleDeleteEvent = () => {
-  //   setEvents((newEvents) => [...newEvents].filter(
-  //     (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
-  //   ));
-  //   handleClearSelectedEvent();
-  //   handleCloseEditDeleteModal();
-  // };
+  const handleDeleteEvent = () => {
+    setEvents((newEvents) => [...newEvents].filter(
+      (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
+    ));
+    handleClearSelectedEvent();
+    handleCloseEditDeleteModal();
+  };
 
   // const handleShowEditModal = () => {
   //   handleCloseEditDeleteModal();
-  //   setSelectedUser(
-  //     (selectedEvent && selectedEvent.extendedProps)
-  //       ? {
-  //         user_id: selectedEvent.extendedProps.user_id,
-  //         real_name: selectedEvent.extendedProps.real_name,
-  //       }
-  //       : {
-  //         ...users[0],
-  //       },
-  //   );
   //   setSelectedEventType(
   //     (selectedEvent && selectedEvent.extendedProps)
   //       ? selectedEvent.extendedProps.type
@@ -205,7 +188,6 @@ export default function WorkerEditPage() {
   // const handleCloseEditModal = () => {
   //   handleClearSelectedEvent();
   //   setSelectedDate('');
-  //   setSelectedUser(null);
   //   setSelectedEventType('');
   //   setShowEditModal(false);
   // };
@@ -214,8 +196,8 @@ export default function WorkerEditPage() {
   //   const userSelected = { ...selectedUser };
   //   if (userSelected.user_id && selectedEventType.trim() !== '') {
   //     const modifiedEvent = {
-  //       title: `${selectedEventType.substring(0, 1).toUpperCase()}` +
-  // `${selectedEventType.substring(1)}`,
+  //       title: `${selectedEventType.substring(0, 1).toUpperCase()}`
+  // + `${selectedEventType.substring(1)}`,
   //       date: selectedEvent.extendedProps.date,
   //       classNames: (selectedEventType === 'shift')
   //         ? [`shift-block-${Number(userSelected.user_id) % 50}`]
@@ -273,12 +255,12 @@ export default function WorkerEditPage() {
           handleSubmit={handleModalAddSubmit}
         />
         {/* Edit / Delete Modal */}
-        {/* <WorkerEditDeleteEventModal
+        <WorkerEditDeleteEventModal
           showModal={showEditDeleteModal}
           onHideModal={handleClearEventAndCloseEditDeleteModal}
           handleDeleteEvent={handleDeleteEvent}
-          handleShowEditModal={handleShowEditModal}
-        /> */}
+          // handleShowEditModal={handleShowEditModal}
+        />
         {/* Edit Modal */}
         {/* <WorkerEditEventModal
           user={user}
