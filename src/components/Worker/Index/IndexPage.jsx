@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 
@@ -17,11 +18,15 @@ export default function WorkerIndexPage() {
     const monthDate = new Date(year, month, 1);
     return monthDate;
   };
-
   const getMonthString = (date) => {
     const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
     const monthDateStr = formatter.format(date);
     return monthDateStr;
+  };
+  const getYearString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { year: 'numeric' });
+    const yearStr = formatter.format(date);
+    return yearStr;
   };
   const [currentMonthDate] = useState(getMonthDate(new Date(), 'current'));
   const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
@@ -73,6 +78,8 @@ export default function WorkerIndexPage() {
               {' '}
               {getMonthString(currentMonthDate)}
               {' '}
+              {getYearString(currentMonthDate)}
+              {' '}
               is out! Click here
             </div>
           </div>
@@ -111,7 +118,20 @@ export default function WorkerIndexPage() {
               </div>
             </div>
             <div className="col-6 ps-3 pe-3">
-              <h4>Shift Submission</h4>
+              <div className="row">
+                <div className="col-9">
+                  <h4>
+                    Shift Submission →
+                    {' '}
+                    {getMonthString(nextMonthDate)}
+                    {' '}
+                    {getYearString(nextMonthDate)}
+                  </h4>
+                </div>
+                <div className="col-3 d-flex justify-content-end">
+                  <Link className="btn btn-primary" to="/workeredit" role="button">Edit</Link>
+                </div>
+              </div>
               <div className="col-12 pt-2">
                 <FullCalendar
                   plugins={[dayGridPlugin]}
