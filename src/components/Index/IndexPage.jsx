@@ -47,16 +47,16 @@ export default function IndexPage() {
   }, []);
 
   return (
-    <div className="container-fluid pt-5">
+    <div className="container pt-5">
       <div className="row w-100 pt-3">
         <div className="col-12 pt-1">
           <div className="row align-items-center">
             <div className="col-6">
-              <h3>
+              <h4 className="mb-0">
                 Shift Overview →
                 {' '}
                 {getNextMonthString(nextMonthDate)}
-              </h3>
+              </h4>
             </div>
             <div className="col-6  d-flex justify-content-end">
               <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
@@ -64,7 +64,7 @@ export default function IndexPage() {
           </div>
         </div>
         <div className="col-12"><hr /></div>
-        <div className="col-12 pt-1">
+        <div className="col-12 pt-3">
           <FullCalendar
             plugins={[dayGridPlugin]}
             initialView="dayGridMonth"
@@ -73,7 +73,56 @@ export default function IndexPage() {
             headerToolbar={false}
           />
         </div>
-        <div className="col-12 pt-3" />
+        <div className="col-12 pt-3"><hr /></div>
+        <div className="col-12 pt-3">
+          <div className="row align-items-center">
+            <div className="col-12">
+              <h4 className="mb-0">
+                Shift Summary
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div className="col-12 pt-3"><hr /></div>
+        <div className="col-12 pt-3">
+          <span className="badge rounded-pill bg-success me-2">Healthy</span>
+          <span className="badge rounded-pill bg-warning text-dark me-2">Running Low</span>
+          <span className="badge rounded-pill bg-danger me-2">Danger</span>
+        </div>
+        <div className="col-12 pt-3">
+          <div className="table-responsive">
+            <table className="table align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">{' '}</th>
+                  <th scope="col">X</th>
+                  <th scope="col">Y</th>
+                  <th scope="col">Z</th>
+                  <th scope="col">A</th>
+                  <th scope="col">B</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lee Chuan Xin</td>
+                  <td>5</td>
+                  <td className="table-success">123</td>
+                  <td className="table-warning">45</td>
+                  <td>5</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>Wong Shen Nan</td>
+                  <td>2</td>
+                  <td className="table-danger">234</td>
+                  <td>5</td>
+                  <td>6</td>
+                  <td>7</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
