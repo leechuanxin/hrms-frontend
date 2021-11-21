@@ -9,8 +9,27 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 export default function AdminIndexPage() {
   const newUserId = 51;
   const [events, setEvents] = useState([
-    { title: '', date: '2021-12-03', extendedProps: { user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'shift' } },
-    { title: '', date: '2021-12-07', extendedProps: { user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'leave' } },
+    {
+      title: '',
+      date: '2021-12-03',
+      extendedProps: {
+        user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
+      },
+    },
+    {
+      title: '',
+      date: '2021-12-07',
+      extendedProps: {
+        user_id: newUserId, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
+      },
+    },
+    {
+      title: '',
+      date: '2021-12-08',
+      extendedProps: {
+        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-12-08',
+      },
+    },
   ]);
 
   const getNextMonthString = (date) => {
@@ -59,7 +78,7 @@ export default function AdminIndexPage() {
               </h4>
             </div>
             <div className="col-6  d-flex justify-content-end">
-              <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
+              <Link className="btn btn-success" to="/adminoptimise" role="button">Optimise</Link>
             </div>
           </div>
         </div>

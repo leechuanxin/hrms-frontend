@@ -9,6 +9,25 @@ import AdminEditDeleteEventModal from './Modals/AdminEditDeleteEventModal.jsx';
 import AdminEditEventModal from './Modals/AdminEditEventModal.jsx';
 
 export default function EditPage() {
+  const getMonthDate = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const month = (type === 'next') ? nextMonth : currentMonth;
+    const year = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
+    const monthDate = new Date(year, month, 1);
+    return monthDate;
+  };
+  const getMonthString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
+    const monthDateStr = formatter.format(date);
+    return monthDateStr;
+  };
+  const getYearString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { year: 'numeric' });
+    const yearStr = formatter.format(date);
+    return yearStr;
+  };
+  const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
   const [users] = useState([
     {
       user_id: 1,
@@ -35,23 +54,23 @@ export default function EditPage() {
   const [events, setEvents] = useState([
     {
       title: '',
-      date: '2021-11-03',
+      date: '2021-12-03',
       extendedProps: {
-        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-11-03',
+        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
       },
     },
     {
       title: '',
-      date: '2021-11-07',
+      date: '2021-12-07',
       extendedProps: {
-        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-11-07',
+        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
       },
     },
     {
       title: '',
-      date: '2021-11-08',
+      date: '2021-12-08',
       extendedProps: {
-        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-11-08',
+        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-12-08',
       },
     },
   ]);
@@ -247,11 +266,21 @@ export default function EditPage() {
     <div className="container-fluid pt-5">
       <div className="row w-100 pt-3">
         <div className="col-12 pt-1">
+          <h3>
+            {getMonthString(nextMonthDate)}
+            {' '}
+            {getYearString(nextMonthDate)}
+          </h3>
+          <hr />
+        </div>
+        <div className="col-12 pt-3">
           <FullCalendar
             plugins={[interactionPlugin, dayGridPlugin]}
             initialView="dayGridMonth"
             editable
             selectable
+            headerToolbar={false}
+            initialDate={nextMonthDate}
             dateClick={handleShowAddModal}
             eventClick={handleEventClick}
             eventDrop={handleEventDrop}
