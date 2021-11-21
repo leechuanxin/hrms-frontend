@@ -19,31 +19,50 @@ export default function WorkerEditPage() {
   const [events, setEvents] = useState([
     {
       title: '',
-      date: '2021-11-03',
+      date: '2021-12-03',
       extendedProps: {
         id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-11-03',
       },
     },
     {
       title: '',
-      date: '2021-11-07',
+      date: '2021-12-07',
       extendedProps: {
         id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-11-07',
       },
     },
   ]);
-  const [currentDate, setCurrentDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [, setShowEditDeleteModal] = useState(false);
   // const [showEditModal, setShowEditModal] = useState(false);
   const [, setSelectedUser] = useState(null);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [, setSelectedEvent] = useState(null);
+  const getMonthDate = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const month = (type === 'next') ? nextMonth : currentMonth;
+    const year = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
+    const monthDate = new Date(year, month, 1);
+    return monthDate;
+  };
+  const getMonthString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
+    const monthDateStr = formatter.format(date);
+    return monthDateStr;
+  };
+  const getYearString = (date) => {
+    const formatter = new Intl.DateTimeFormat('default', { year: 'numeric' });
+    const yearStr = formatter.format(date);
+    return yearStr;
+  };
+  const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
 
   useEffect(() => {
     const newEvents = [...events];
     const rerenderedEvents = newEvents.map((event) => {
-      const title = `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`;
+      const title = `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`;
 
       if (event.extendedProps.type === 'shift') {
         return {
@@ -63,13 +82,13 @@ export default function WorkerEditPage() {
   }, []);
 
   const handleCloseAddModal = () => {
-    setCurrentDate('');
+    setSelectedDate('');
     setSelectedUser(null);
     setSelectedEventType('');
     setShowAddModal(false);
   };
   const handleShowAddModal = (arg) => {
-    setCurrentDate(arg.dateStr);
+    setSelectedDate(arg.dateStr);
     setShowAddModal(true);
   };
 
@@ -102,8 +121,8 @@ export default function WorkerEditPage() {
     // get all events on selected day
     if (selectedEventType.trim() !== '') {
       const newEvent = {
-        title: `${user.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
-        date: currentDate,
+        title: `${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
+        date: selectedDate,
         classNames: (selectedEventType === 'shift')
           ? [`shift-block-${Number(user.user_id) % 50}`]
           : ['leave-block'],
@@ -112,7 +131,7 @@ export default function WorkerEditPage() {
           user_id: user.user_id,
           real_name: user.real_name,
           type: selectedEventType,
-          date: currentDate,
+          date: selectedDate,
         },
       };
       setEvents((oldEvents) => ([...oldEvents, newEvent]));
@@ -185,7 +204,7 @@ export default function WorkerEditPage() {
 
   // const handleCloseEditModal = () => {
   //   handleClearSelectedEvent();
-  //   setCurrentDate('');
+  //   setSelectedDate('');
   //   setSelectedUser(null);
   //   setSelectedEventType('');
   //   setShowEditModal(false);
@@ -195,8 +214,8 @@ export default function WorkerEditPage() {
   //   const userSelected = { ...selectedUser };
   //   if (userSelected.user_id && selectedEventType.trim() !== '') {
   //     const modifiedEvent = {
-  //       title: `${userSelected.real_name}'s ` +
-  // `${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
+  //       title: `${selectedEventType.substring(0, 1).toUpperCase()}` +
+  // `${selectedEventType.substring(1)}`,
   //       date: selectedEvent.extendedProps.date,
   //       classNames: (selectedEventType === 'shift')
   //         ? [`shift-block-${Number(userSelected.user_id) % 50}`]
@@ -224,6 +243,14 @@ export default function WorkerEditPage() {
     <div className="container-fluid pt-5">
       <div className="row w-100 pt-3">
         <div className="col-12 pt-1">
+          <h3>
+            {getMonthString(nextMonthDate)}
+            {' '}
+            {getYearString(nextMonthDate)}
+          </h3>
+          <hr />
+        </div>
+        <div className="col-12 pt-3">
           <FullCalendar
             plugins={[interactionPlugin, dayGridPlugin]}
             initialView="dayGridMonth"
@@ -232,7 +259,9 @@ export default function WorkerEditPage() {
             dateClick={handleShowAddModal}
             eventClick={handleEventClick}
             eventDrop={handleEventDrop}
+            initialDate={nextMonthDate}
             events={events}
+            headerToolbar={false}
           />
         </div>
         {/* Add Modal */}
