@@ -26,11 +26,13 @@ export default function RegisterPage() {
   const [globalErrorMessage, setGlobalErrorMessage] = useState('');
   const [usernameInvalidMessage, setUsernameInvalidMessage] = useState('');
   const [nameInvalidMessage, setNameInvalidMessage] = useState('');
-  const [passwordInvalidMessage, setPasswordInvalidMessage] = useState('');
+  const [password1InvalidMessage, setPassword1InvalidMessage] = useState('');
+  const [password2InvalidMessage, setPassword2InvalidMessage] = useState('');
 
   const [username, setUsername] = useState('');
   const [realname, setRealname] = useState('');
-  const [password, setPassword] = useState('');
+  const [password1, setPassword1] = useState('');
+  const [password2, setPassword2] = useState('');
 
   const handleUsernameChange = (event) => {
     // Retrieve input field value from JS event object.
@@ -46,11 +48,18 @@ export default function RegisterPage() {
     setRealname(inputName);
   };
 
-  const handlePasswordChange = (event) => {
+  const handlePassword1Change = (event) => {
     // Retrieve input field value from JS event object.
     const inputName = event.target.value;
     // Log input field value to verify what we typed.
-    setPassword(inputName);
+    setPassword1(inputName);
+  };
+
+  const handlePassword2Change = (event) => {
+    // Retrieve input field value from JS event object.
+    const inputName = event.target.value;
+    // Log input field value to verify what we typed.
+    setPassword2(inputName);
   };
 
   const handleSubmit = (event) => {
@@ -58,16 +67,18 @@ export default function RegisterPage() {
 
     let usernameInvalid = '';
     let nameInvalid = '';
-    let passwordInvalid = '';
+    let password1Invalid = '';
+    let password2Invalid = '';
 
     const data = {
       realName: realname,
       username,
-      password,
+      password1,
+      password2,
     };
 
     axios
-      .post(`${REACT_APP_BACKEND_URL}/signup`, data)
+      .post(`${REACT_APP_BACKEND_URL}/api/rest-auth/registration`, data)
       .then((response) => {
         if (response.data.error) {
           window.scrollTo(0, 0);
@@ -81,14 +92,19 @@ export default function RegisterPage() {
               nameInvalid = response.data.realname_invalid;
             }
 
-            if (response.data.password_invalid) {
-              passwordInvalid = response.data.password_invalid;
+            if (response.data.password1_invalid) {
+              password1Invalid = response.data.password1_invalid;
+            }
+
+            if (response.data.password2_invalid) {
+              password2Invalid = response.data.password2_invalid;
             }
           }
 
           setUsernameInvalidMessage(usernameInvalid);
           setNameInvalidMessage(nameInvalid);
-          setPasswordInvalidMessage(passwordInvalid);
+          setPassword1InvalidMessage(password1Invalid);
+          setPassword2InvalidMessage(password2Invalid);
           setGlobalErrorMessage(errors.REGISTER_GLOBAL_ERROR_MESSAGE);
         } else {
           setIsRegistered(true);
@@ -164,22 +180,40 @@ export default function RegisterPage() {
                 <div className="invalid-feedback text-red-300">{nameInvalidMessage}</div>
               </div>
               <div className="col-12 mb-3">
-                <label htmlFor="password">
-                  <strong className="text-blue-50">Password</strong>
+                <label htmlFor="password1">
+                  <strong className="text-blue-50">Enter your password</strong>
                 </label>
                 <input
                   type="password"
                   className={
                     `form-control${
-                      passwordInvalidMessage.trim() !== '' ? ' is-invalid' : ''
+                      password1InvalidMessage.trim() !== '' ? ' is-invalid' : ''
                     }`
                   }
-                  id="password"
-                  name="password"
-                  value={password}
-                  onChange={handlePasswordChange}
+                  id="password1"
+                  name="password1"
+                  value={password1}
+                  onChange={handlePassword1Change}
                 />
-                <div className="invalid-feedback text-red-300">{passwordInvalidMessage}</div>
+                <div className="invalid-feedback text-red-300">{password1InvalidMessage}</div>
+              </div>
+              <div className="col-12 mb-3">
+                <label htmlFor="password2">
+                  <strong className="text-blue-50">Please re-enter your password</strong>
+                </label>
+                <input
+                  type="password"
+                  className={
+                    `form-control${
+                      password2InvalidMessage.trim() !== '' ? ' is-invalid' : ''
+                    }`
+                  }
+                  id="password2"
+                  name="password2"
+                  value={password2}
+                  onChange={handlePassword2Change}
+                />
+                <div className="invalid-feedback text-red-300">{password2InvalidMessage}</div>
               </div>
             </div>
             <hr className="mb-4" />
