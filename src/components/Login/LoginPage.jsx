@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useContext } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 // Custom imports
 import REACT_APP_BACKEND_URL from '../../modules/urls.mjs';
@@ -29,16 +29,22 @@ function GlobalLoginErrorAlert({ errorMessage }) {
 }
 
 export default function LoginPage({
-  sessionExpired,
+  sessionExpired, user,
 }) {
   const dispatch = useContext(UserContext);
   const query = useQuery();
   const [globalErrorMessage, setGlobalErrorMessage] = useState(
     sessionExpired ? errors.SESSION_EXPIRED_ERROR_MESSAGE : '',
   );
-
   const [username, setUsername] = useState(query.get('username') || '');
   const [password, setPassword] = useState('');
+
+  const userExists = !!user;
+  const userIdExists = userExists
+    && (user.userId !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
 
   const handleUsernameChange = (event) => {
     // Retrieve input field value from JS event object.
@@ -72,10 +78,6 @@ export default function LoginPage({
         localStorageService.setItem('user_id', response.data.user_id);
         localStorageService.setItem('username', response.data.username);
         dispatch(addUser({ ...newData }));
-        // setPrevUsername(response.data.username);
-        // setPrevRealName(response.data.realName);
-        // setPrevUserId(response.data.id);
-        // handleSetIsLoggedIn();
       })
       .catch(() => {
         // handle error
@@ -83,6 +85,10 @@ export default function LoginPage({
         setGlobalErrorMessage(errors.LOGIN_GLOBAL_ERROR_MESSAGE);
       });
   };
+
+  if (isLoggedIn) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <div className="container-fluid pt-5">

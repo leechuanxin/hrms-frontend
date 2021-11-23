@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Redirect, Link } from 'react-router-dom';
@@ -21,7 +20,7 @@ function GlobalRegisterErrorAlert({ errorMessage }) {
   return null;
 }
 
-export default function RegisterPage() {
+export default function RegisterPage({ user }) {
   const [isRegistered, setIsRegistered] = useState(false);
   const [globalErrorMessage, setGlobalErrorMessage] = useState('');
   const [usernameInvalidMessage, setUsernameInvalidMessage] = useState('');
@@ -33,6 +32,13 @@ export default function RegisterPage() {
   const [realname, setRealname] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
+
+  const userExists = !!user;
+  const userIdExists = userExists
+    && (user.userId !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
 
   const handleUsernameChange = (event) => {
     // Retrieve input field value from JS event object.
@@ -149,6 +155,10 @@ export default function RegisterPage() {
     return (
       <Redirect push to={`/login?registersuccess=true&username=${username}`} />
     );
+  }
+
+  if (isLoggedIn) {
+    return <Redirect to="/" />;
   }
 
   return (

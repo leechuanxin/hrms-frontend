@@ -5,7 +5,9 @@ import { Offcanvas, CloseButton } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
-function NavbarButtons({ isLoggedIn, isAuthPage, handleLogoutSubmit }) {
+function NavbarButtons({
+  isLoggedIn, isAuthPage, handleLogoutSubmit,
+}) {
   if (isLoggedIn && !isAuthPage) {
     return (
       <form
@@ -32,8 +34,14 @@ function NavbarButtons({ isLoggedIn, isAuthPage, handleLogoutSubmit }) {
 }
 
 export default function Navbar({
-  isLoggedIn, isAuthPage, hasNavbar, handleLogoutSubmit,
+  user, isAuthPage, hasNavbar, handleLogoutSubmit,
 }) {
+  const userExists = !!user;
+  const userIdExists = userExists
+    && (user.userId !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
   const handleCloseOffCanvas = () => setShowOffcanvas(false);

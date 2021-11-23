@@ -13,10 +13,10 @@ import {
   initialState,
   userReducer,
   addUser,
+  deleteUser,
 } from './reducers/UserReducer.js';
 import UserContext from './contexts/UserContext.js';
 // services and modules
-import REACT_APP_BACKEND_URL from './modules/urls.mjs';
 import localStorageService from './modules/localStorageService.mjs';
 import './App.css';
 // component partials
@@ -73,6 +73,7 @@ export default function App() {
       localStorageService.removeItem('token');
       localStorageService.removeItem('user_id');
       localStorageService.removeItem('username');
+      dispatch(deleteUser());
     } else {
       dispatch(
         addUser({
@@ -86,45 +87,21 @@ export default function App() {
 
   const handleLogoutSubmit = (event) => {
     event.preventDefault();
-
-    axios
-      .delete(`${REACT_APP_BACKEND_URL}/logout`)
-      .then((response) => {
-        if (response.data.error) {
-          console.log('logout error:', response.data.error);
-        } else {
-          // setIsLoggedIn(false);
-          // setIsJustLoggedOut(true);
-          // setUsername('');
-          // setRealName('');
-          // setUserId(0);
-        }
-      })
-      .catch((error) => {
-        // handle error
-        console.log('logout error:', error);
-      });
+    localStorageService.removeItem('token');
+    localStorageService.removeItem('user_id');
+    localStorageService.removeItem('username');
+    dispatch(deleteUser());
   };
 
   const handleSetNavbar = () => {
     setHasNavbar(true);
   };
 
-  // const handleSetIsLoggedIn = () => {
-  //   setIsLoggedIn(true);
-  // };
-
-  console.log('user in app:');
-  console.log(user);
-
   return (
     <UserContext.Provider value={dispatch}>
       <Router>
         <Navbar
-          // username={username}
-          // userId={userId}
-          // realName={realName}
-          // isLoggedIn={isLoggedIn}
+          user={user}
           isAuthPage={isAuthPage}
           hasNavbar={hasNavbar}
           handleLogoutSubmit={handleLogoutSubmit}
@@ -143,7 +120,6 @@ export default function App() {
               >
                 <Register
                   user={user}
-                  // isLoggedIn={isLoggedIn}
                 />
               </NavbarWrapper>
             )}
@@ -158,11 +134,6 @@ export default function App() {
               >
                 <Login
                   user={user}
-                  // isLoggedIn={isLoggedIn}
-                  // handleSetIsLoggedIn={handleSetIsLoggedIn}
-                  // setPrevUsername={setUsername}
-                  // setPrevRealName={setRealName}
-                  // setPrevUserId={setUserId}
                 />
               </NavbarWrapper>
             )}
