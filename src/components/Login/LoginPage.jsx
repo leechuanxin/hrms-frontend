@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 // Custom imports
 import REACT_APP_BACKEND_URL from '../../modules/urls.mjs';
 import * as successes from '../../modules/successes.mjs';
 import * as errors from '../../modules/errors.mjs';
+import { UserContext } from '../../contexts/UserContext.js';
+import { addUser } from '../../reducers/UserReducer.js';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -26,14 +28,13 @@ function GlobalLoginErrorAlert({ errorMessage }) {
 }
 
 export default function LoginPage({
-  sessionExpired, handleSetIsLoggedIn, setPrevUsername, setPrevRealName, setPrevUserId,
+  sessionExpired,
 }) {
+  const dispatch = useContext(UserContext);
   const query = useQuery();
   const [globalErrorMessage, setGlobalErrorMessage] = useState(
     sessionExpired ? errors.SESSION_EXPIRED_ERROR_MESSAGE : '',
   );
-  const [usernameInvalidMessage, setUsernameInvalidMessage] = useState('');
-  const [passwordInvalidMessage, setPasswordInvalidMessage] = useState('');
 
   const [username, setUsername] = useState(query.get('username') || '');
   const [password, setPassword] = useState('');
@@ -55,41 +56,24 @@ export default function LoginPage({
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    let usernameInvalid = '';
-    let passwordInvalid = '';
-
     const data = {
       username,
       password,
     };
 
     axios
-      .post(`${REACT_APP_BACKEND_URL}/login`, data)
+      .post(`${REACT_APP_BACKEND_URL}/api/login/`, data)
       .then((response) => {
-        if (response.data.error) {
-          window.scrollTo(0, 0);
-
-          if (
-            response.data.error === errors.LOGIN_INPUT_VALIDATION_ERROR_MESSAGE
-          ) {
-            if (response.data.username_invalid) {
-              usernameInvalid = response.data.username_invalid;
-            }
-
-            if (response.data.password_invalid) {
-              passwordInvalid = response.data.password_invalid;
-            }
-          }
-
-          setUsernameInvalidMessage(usernameInvalid);
-          setPasswordInvalidMessage(passwordInvalid);
-          setGlobalErrorMessage(errors.LOGIN_GLOBAL_ERROR_MESSAGE);
-        } else {
-          setPrevUsername(response.data.username);
-          setPrevRealName(response.data.realName);
-          setPrevUserId(response.data.id);
-          handleSetIsLoggedIn();
-        }
+        const newData = {
+          ...response.data,
+        };
+        console.log('data to add:');
+        console.log(newData);
+        dispatch(addUser({ ...newData }));
+        // setPrevUsername(response.data.username);
+        // setPrevRealName(response.data.realName);
+        // setPrevUserId(response.data.id);
+        // handleSetIsLoggedIn();
       })
       .catch(() => {
         // handle error
@@ -126,16 +110,14 @@ export default function LoginPage({
                 </label>
                 <input
                   type="text"
-                  className={`form-control${
-                    usernameInvalidMessage.trim() !== '' ? ' is-invalid' : ''
-                  }`}
+                  className="form-control"
                   id="userName"
                   name="username"
                   placeholder="e.g. chee_kean"
                   value={username}
                   onChange={handleUsernameChange}
                 />
-                <div className="invalid-feedback text-red-300">{usernameInvalidMessage}</div>
+                <div className="invalid-feedback text-red-300" />
               </div>
               <div className="col-12 mb-3">
                 <label htmlFor="password">
@@ -143,15 +125,13 @@ export default function LoginPage({
                 </label>
                 <input
                   type="password"
-                  className={`form-control${
-                    passwordInvalidMessage.trim() !== '' ? ' is-invalid' : ''
-                  }`}
+                  className="form-control"
                   id="password"
                   name="password"
                   value={password}
                   onChange={handlePasswordChange}
                 />
-                <div className="invalid-feedback text-red-300">{passwordInvalidMessage}</div>
+                <div className="invalid-feedback text-red-300" />
               </div>
             </div>
             <hr className="mb-4" />

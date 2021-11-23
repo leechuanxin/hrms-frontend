@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -8,7 +8,17 @@ import {
 import axios from 'axios';
 
 // CUSTOM IMPORTS
-import { hasLoginCookie, getCookie } from './modules/cookie.mjs';
+// contexts and reducers
+import {
+  initialState,
+  userReducer,
+} from './reducers/UserReducer.js';
+import { UserContext } from './contexts/UserContext.js';
+// others
+// import {
+//   hasLoginCookie,
+//   getCookie
+// } from './modules/cookie.mjs';
 import REACT_APP_BACKEND_URL from './modules/urls.mjs';
 import './App.css';
 // component partials
@@ -49,15 +59,13 @@ function NavbarWrapper({
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(hasLoginCookie());
+  const [user, dispatch] = useReducer(userReducer, initialState);
   const [hasNavbar, setHasNavbar] = useState(true);
   const [isAuthPage, setIsAuthPage] = useState(false);
-  const [, setIsJustLoggedOut] = useState(false);
-  const [username, setUsername] = useState(getCookie('username').trim());
-  const [realName, setRealName] = useState(getCookie('realName').trim().split('%20').join(' '));
-  const [userId, setUserId] = useState(Number(getCookie('userId').trim()));
-
-  // need useEffect for this?
+  // const [, setIsJustLoggedOut] = useState(false);
+  // const [username, setUsername] = useState(getCookie('username').trim());
+  // const [realName, setRealName] = useState(getCookie('realName').trim().split('%20').join(' '));
+  // const [userId, setUserId] = useState(Number(getCookie('userId').trim()));
 
   const handleLogoutSubmit = (event) => {
     event.preventDefault();
@@ -68,11 +76,11 @@ export default function App() {
         if (response.data.error) {
           console.log('logout error:', response.data.error);
         } else {
-          setIsLoggedIn(false);
-          setIsJustLoggedOut(true);
-          setUsername('');
-          setRealName('');
-          setUserId(0);
+          // setIsLoggedIn(false);
+          // setIsJustLoggedOut(true);
+          // setUsername('');
+          // setRealName('');
+          // setUserId(0);
         }
       })
       .catch((error) => {
@@ -85,147 +93,146 @@ export default function App() {
     setHasNavbar(true);
   };
 
-  const handleSetIsLoggedIn = () => {
-    setIsLoggedIn(true);
-  };
+  // const handleSetIsLoggedIn = () => {
+  //   setIsLoggedIn(true);
+  // };
+
+  console.log('user in app:');
+  console.log(user);
 
   return (
-    <Router>
-      <Navbar
-        username={username}
-        userId={userId}
-        realName={realName}
-        isLoggedIn={isLoggedIn}
-        isAuthPage={isAuthPage}
-        hasNavbar={hasNavbar}
-        handleLogoutSubmit={handleLogoutSubmit}
-      />
-      {/* A <Switch> looks through its children <Route>s and
+    <UserContext.Provider value={dispatch}>
+      <Router>
+        <Navbar
+          // username={username}
+          // userId={userId}
+          // realName={realName}
+          // isLoggedIn={isLoggedIn}
+          isAuthPage={isAuthPage}
+          hasNavbar={hasNavbar}
+          handleLogoutSubmit={handleLogoutSubmit}
+        />
+        {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-      <Switch>
-        {/* give the route matching path in order of matching precedence */}
-        <Route
-          path="/signup"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <Register isLoggedIn={isLoggedIn} />
-            </NavbarWrapper>
-          )}
-        />
-        <Route
-          path="/login"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <Login
-                isLoggedIn={isLoggedIn}
-                handleSetIsLoggedIn={handleSetIsLoggedIn}
-                setPrevUsername={setUsername}
-                setPrevRealName={setRealName}
-                setPrevUserId={setUserId}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        {/* WORKER ROUTES */}
-        <Route
-          exact
-          path={['/worker', '/']}
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <WorkerIndex
-                isLoggedIn={isLoggedIn}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        <Route
-          exact
-          path="/workeredit"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <WorkerEdit
-                isLoggedIn={isLoggedIn}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        {/* ADMIN ROUTES */}
-        <Route
-          exact
-          path="/admin"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <AdminIndex
-                isLoggedIn={isLoggedIn}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        <Route
-          exact
-          path="/adminoptimise"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <AdminOptimise
-                isLoggedIn={isLoggedIn}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        <Route
-          exact
-          path="/adminedit"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <AdminEdit
-                isLoggedIn={isLoggedIn}
-              />
-            </NavbarWrapper>
-          )}
-        />
-        {/* ALL OTHERS */}
-        <Route
-          exact
-          path="*"
-          render={() => (
-            <NavbarWrapper
-              navbarForAuth={false}
-              setIsAuthPage={setIsAuthPage}
-              handleSetNavbar={handleSetNavbar}
-            >
-              <Error404 />
-            </NavbarWrapper>
-          )}
-        />
-      </Switch>
-    </Router>
+        <Switch>
+          {/* give the route matching path in order of matching precedence */}
+          <Route
+            path="/signup"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <Register
+                  user={user}
+                  // isLoggedIn={isLoggedIn}
+                />
+              </NavbarWrapper>
+            )}
+          />
+          <Route
+            path="/login"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <Login
+                  user={user}
+                  // isLoggedIn={isLoggedIn}
+                  // handleSetIsLoggedIn={handleSetIsLoggedIn}
+                  // setPrevUsername={setUsername}
+                  // setPrevRealName={setRealName}
+                  // setPrevUserId={setUserId}
+                />
+              </NavbarWrapper>
+            )}
+          />
+          {/* WORKER ROUTES */}
+          <Route
+            exact
+            path={['/worker', '/']}
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <WorkerIndex />
+              </NavbarWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/workeredit"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <WorkerEdit />
+              </NavbarWrapper>
+            )}
+          />
+          {/* ADMIN ROUTES */}
+          <Route
+            exact
+            path="/admin"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <AdminIndex />
+              </NavbarWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/adminoptimise"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <AdminOptimise />
+              </NavbarWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/adminedit"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <AdminEdit />
+              </NavbarWrapper>
+            )}
+          />
+          {/* ALL OTHERS */}
+          <Route
+            exact
+            path="*"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <Error404 />
+              </NavbarWrapper>
+            )}
+          />
+        </Switch>
+      </Router>
+    </UserContext.Provider>
   );
 }
