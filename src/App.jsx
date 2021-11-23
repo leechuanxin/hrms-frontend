@@ -12,14 +12,12 @@ import axios from 'axios';
 import {
   initialState,
   userReducer,
+  addUser,
 } from './reducers/UserReducer.js';
-import { UserContext } from './contexts/UserContext.js';
-// others
-// import {
-//   hasLoginCookie,
-//   getCookie
-// } from './modules/cookie.mjs';
+import UserContext from './contexts/UserContext.js';
+// services and modules
 import REACT_APP_BACKEND_URL from './modules/urls.mjs';
+import localStorageService from './modules/localStorageService.mjs';
 import './App.css';
 // component partials
 import Navbar from './components/Navbar/Navbar.jsx';
@@ -57,7 +55,6 @@ function NavbarWrapper({
 
   return <>{children}</>;
 }
-
 export default function App() {
   const [user, dispatch] = useReducer(userReducer, initialState);
   const [hasNavbar, setHasNavbar] = useState(true);
@@ -66,6 +63,26 @@ export default function App() {
   // const [username, setUsername] = useState(getCookie('username').trim());
   // const [realName, setRealName] = useState(getCookie('realName').trim().split('%20').join(' '));
   // const [userId, setUserId] = useState(Number(getCookie('userId').trim()));
+
+  useEffect(() => {
+    const token = localStorageService.getItem('token');
+    const userId = localStorageService.getItem('user_id');
+    const username = localStorageService.getItem('username');
+
+    if (!token || !userId || !username) {
+      localStorageService.removeItem('token');
+      localStorageService.removeItem('user_id');
+      localStorageService.removeItem('username');
+    } else {
+      dispatch(
+        addUser({
+          token,
+          user_id: Number(userId),
+          username,
+        }),
+      );
+    }
+  }, []);
 
   const handleLogoutSubmit = (event) => {
     event.preventDefault();

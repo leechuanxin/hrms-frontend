@@ -6,7 +6,8 @@ import axios from 'axios';
 import REACT_APP_BACKEND_URL from '../../modules/urls.mjs';
 import * as successes from '../../modules/successes.mjs';
 import * as errors from '../../modules/errors.mjs';
-import { UserContext } from '../../contexts/UserContext.js';
+import localStorageService from '../../modules/localStorageService.mjs';
+import UserContext from '../../contexts/UserContext.js';
 import { addUser } from '../../reducers/UserReducer.js';
 
 function useQuery() {
@@ -67,8 +68,9 @@ export default function LoginPage({
         const newData = {
           ...response.data,
         };
-        console.log('data to add:');
-        console.log(newData);
+        localStorageService.setItem('token', response.data.token);
+        localStorageService.setItem('user_id', response.data.user_id);
+        localStorageService.setItem('username', response.data.username);
         dispatch(addUser({ ...newData }));
         // setPrevUsername(response.data.username);
         // setPrevRealName(response.data.realName);
