@@ -1,10 +1,21 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
+import axios from 'axios';
+// CUSTOM IMPORTS
+import REACT_APP_BACKEND_URL from '../../../modules/urls.mjs';
+import getApiHeader from '../../../modules/api-headers.mjs';
+// Custom Components
+import Error404 from '../../Error/Error404Page.jsx';
 
-export default function WorkerIndexPage() {
+// make sure that axios always sends the cookies to the backend server
+axios.defaults.withCredentials = true;
+
+export default function WorkerIndexPage({ user }) {
+  const [isWorker, setIsWorker] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [events, setEvents] = useState([
     { title: '', date: '2021-12-03', extendedProps: { user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift' } },
     { title: '', date: '2021-12-07', extendedProps: { user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave' } },
@@ -51,10 +62,64 @@ export default function WorkerIndexPage() {
     setEvents(rerenderedEvents);
   }, []);
 
+  useEffect(() => {
+    const hasUserId = !!user && user.user_id;
+    if (hasUserId) {
+      axios
+        .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/schedule`, getApiHeader(user.token))
+        .then((response) => {
+          console.log('call api');
+          console.log(response);
+          setIsWorker(true);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          // handle error
+          setIsWorker(false);
+          setIsLoading(false);
+        });
+    } else {
+      setIsWorker(false);
+      setIsLoading(true);
+    }
+  }, [user]);
+
+  const userExists = !!user;
+  const userIdExists = userExists
+    && !Number.isNaN(Number(user.user_id)) && (user.user_id !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
+
+  if (!isLoggedIn) {
+    return <Redirect to="/" />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container pt-5 pb-5">
+        <div className="row w-100 pt-3">
+          <div className="col-12 pt-1 d-flex justify-content-center">
+            <div className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isWorker && !isLoading) {
+    return (
+      <Error404 />
+    );
+  }
+
   return (
     <div className="container pt-5 pb-5">
       <div className="row w-100 pt-3">
-        <div className="col-12 pt-1">
+        <div className="col-12 pt-1">Test</div>
+        <div className="col-12 pt-3">
           <div className="alert alert-warning d-flex align-items-center" role="alert">
             <svg
               xmlns="http://www.w3.org/2000/svg"

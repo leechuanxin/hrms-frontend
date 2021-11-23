@@ -38,7 +38,7 @@ export default function Navbar({
 }) {
   const userExists = !!user;
   const userIdExists = userExists
-    && (user.userId !== 0);
+    && !Number.isNaN(Number(user.user_id)) && (user.user_id !== 0);
   const usernameExists = userExists && (user.username && user.username.trim() !== '');
   const userTokenExists = userExists && (user.token && user.token.trim() !== '');
   const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
@@ -89,7 +89,7 @@ export default function Navbar({
                   <Link className="nav-link text-white" to="/" aria-current="page" onClick={handleCloseOffCanvas}>Home</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link text-white" to="/" aria-current="page" onClick={handleCloseOffCanvas}>Worker</Link>
+                  <Link className="nav-link text-white" to="/worker" aria-current="page" onClick={handleCloseOffCanvas}>Worker</Link>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link text-white" to="/admin" aria-current="page" onClick={handleCloseOffCanvas}>Admin</Link>

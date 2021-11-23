@@ -5,7 +5,6 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-import axios from 'axios';
 
 // CUSTOM IMPORTS
 // contexts and reducers
@@ -32,10 +31,8 @@ import AdminOptimise from './components/Admin/Optimise/OptimisePage.jsx';
 import WorkerIndex from './components/Worker/Index/IndexPage.jsx';
 import WorkerEdit from './components/Worker/Edit/EditPage.jsx';
 // other pages
+import Index from './components/Index/IndexPage.jsx';
 import Error404 from './components/Error/Error404Page.jsx';
-
-// make sure that axios always sends the cookies to the backend server
-axios.defaults.withCredentials = true;
 
 function NavbarWrapper({
   navbarForAuth,
@@ -59,10 +56,6 @@ export default function App() {
   const [user, dispatch] = useReducer(userReducer, initialState);
   const [hasNavbar, setHasNavbar] = useState(true);
   const [isAuthPage, setIsAuthPage] = useState(false);
-  // const [, setIsJustLoggedOut] = useState(false);
-  // const [username, setUsername] = useState(getCookie('username').trim());
-  // const [realName, setRealName] = useState(getCookie('realName').trim().split('%20').join(' '));
-  // const [userId, setUserId] = useState(Number(getCookie('userId').trim()));
 
   useEffect(() => {
     const token = localStorageService.getItem('token');
@@ -141,14 +134,16 @@ export default function App() {
           {/* WORKER ROUTES */}
           <Route
             exact
-            path={['/worker', '/']}
+            path="/worker"
             render={() => (
               <NavbarWrapper
                 navbarForAuth={false}
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <WorkerIndex />
+                <WorkerIndex
+                  user={user}
+                />
               </NavbarWrapper>
             )}
           />
@@ -206,6 +201,19 @@ export default function App() {
             )}
           />
           {/* ALL OTHERS */}
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <Index />
+              </NavbarWrapper>
+            )}
+          />
           <Route
             exact
             path="*"

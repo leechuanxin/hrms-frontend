@@ -41,7 +41,7 @@ export default function LoginPage({
 
   const userExists = !!user;
   const userIdExists = userExists
-    && (user.userId !== 0);
+    && !Number.isNaN(Number(user.user_id)) && (user.user_id !== 0);
   const usernameExists = userExists && (user.username && user.username.trim() !== '');
   const userTokenExists = userExists && (user.token && user.token.trim() !== '');
   const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
