@@ -78,7 +78,7 @@ export default function RegisterPage() {
     };
 
     axios
-      .post(`${REACT_APP_BACKEND_URL}/api/rest-auth/registration`, data)
+      .post(`${REACT_APP_BACKEND_URL}/api/dj-rest-auth/registration`, data)
       .then((response) => {
         if (response.data.error) {
           window.scrollTo(0, 0);
@@ -110,10 +110,38 @@ export default function RegisterPage() {
           setIsRegistered(true);
         }
       })
-      .catch(() => {
+      .catch(({ response }) => {
         // handle error
         window.scrollTo(0, 0);
         setGlobalErrorMessage(errors.REGISTER_GLOBAL_ERROR_MESSAGE);
+        if (
+          response.data.non_field_errors
+          && response.data.non_field_errors[0].indexOf('password') !== -1
+        ) {
+          [password1Invalid] = response.data.non_field_errors;
+          [password2Invalid] = response.data.non_field_errors;
+        }
+
+        if (response.data.password1) {
+          password1Invalid = `${password1Invalid} ${response.data.password1.join(' ')}`;
+        }
+
+        if (response.data.password2) {
+          password2Invalid = `${password2Invalid} ${response.data.password2.join(' ')}`;
+        }
+
+        if (response.data.real_name) {
+          nameInvalid = `${nameInvalid} ${response.data.real_name.join(' ')}`;
+        }
+
+        if (response.data.username) {
+          usernameInvalid = `${usernameInvalid} ${response.data.username.join(' ')}`;
+        }
+
+        setUsernameInvalidMessage(usernameInvalid);
+        setNameInvalidMessage(nameInvalid);
+        setPassword1InvalidMessage(password1Invalid);
+        setPassword2InvalidMessage(password2Invalid);
       });
   };
 
