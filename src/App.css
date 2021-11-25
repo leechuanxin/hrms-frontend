@@ -308,3 +308,40 @@ body {
 .fc .shift-block-49 {
   background-color: #ffd54f;
 }
+
+.square-image-wrapper {
+  display: block;
+  position: relative;
+  width: 80px;
+  margin: 0 auto;
+}
+
+.square-image {
+  display: block;
+  padding-bottom: 100%;
+  overflow: hidden;
+  position: relative;
+  box-sizing: content-box;
+  width: 100%;
+}
+
+.square-image.circle {
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgb(17, 24, 39);
+}
+
+.square-image img {
+  position: absolute;
+  object-fit: cover;
+  height: auto;
+  min-height: 100%;
+  left: 0;
+  top: 0;
+  border: 0;
+  width: 100%;
+}
+
+.fade-text-color {
+  color: rgb(107, 114, 128);
+}
