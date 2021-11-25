@@ -79,7 +79,7 @@ export default function LoginPage({
         localStorageService.setItem('username', response.data.username);
         localStorageService.setItem('org_id', response.data.org_id);
         localStorageService.setItem('role', response.data.role);
-        console.log(`POST request of '${REACT_APP_BACKEND_URL}/api/login/'`);
+        console.log(`POST request of Login API: '${REACT_APP_BACKEND_URL}/api/login/'`);
         console.log('data retrieved:');
         console.log({ ...response.data });
 

@@ -77,6 +77,8 @@ export default function App() {
           token,
           user_id: Number(userId),
           username,
+          org_id: Number(orgId),
+          role,
         }),
       );
     }
@@ -216,7 +218,7 @@ export default function App() {
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <Index />
+                <Index user={user} />
               </NavbarWrapper>
             )}
           />
