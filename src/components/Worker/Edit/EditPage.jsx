@@ -1,43 +1,37 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
+import axios from 'axios';
 // CUSTOM IMPORTS
+import REACT_APP_BACKEND_URL from '../../../modules/urls.mjs';
+import getApiHeader from '../../../modules/api-headers.mjs';
 import WorkerAddEventModal from './Modals/WorkerAddEventModal.jsx';
 import WorkerEditDeleteEventModal from './Modals/WorkerEditDeleteEventModal.jsx';
 import WorkerEditEventModal from './Modals/WorkerEditEventModal.jsx';
+import Error404 from '../../Error/Error404Page.jsx';
 
-export default function WorkerEditPage() {
-  const [user] = useState(
-    {
-      user_id: 1,
-      real_name: 'Lee Chuan Xin',
-    },
-  );
+export default function WorkerEditPage({ user }) {
   const [eventTypes] = useState(['shift', 'leave']);
-  const [events, setEvents] = useState([
-    {
-      title: '',
-      date: '2021-12-03',
-      extendedProps: {
-        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
-      },
-    },
-    {
-      title: '',
-      date: '2021-12-07',
-      extendedProps: {
-        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
-      },
-    },
-  ]);
+  const [events, setEvents] = useState([]);
+  const [isWorker, setIsWorker] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [selectedDate, setSelectedDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const getMonthNumber = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const monthNumber = (type === 'next') ? nextMonth : currentMonth;
+    return monthNumber;
+  };
   const getMonthDate = (date, type) => {
     const currentMonth = date.getMonth();
     const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
@@ -51,6 +45,12 @@ export default function WorkerEditPage() {
     const monthDateStr = formatter.format(date);
     return monthDateStr;
   };
+  const getYearNumber = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const yearNumber = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
+    return yearNumber;
+  };
   const getYearString = (date) => {
     const formatter = new Intl.DateTimeFormat('default', { year: 'numeric' });
     const yearStr = formatter.format(date);
@@ -59,26 +59,55 @@ export default function WorkerEditPage() {
   const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
 
   useEffect(() => {
-    const newEvents = [...events];
-    const rerenderedEvents = newEvents.map((event) => {
-      const title = `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`;
+    const hasUserId = !!user && user.user_id;
+    const data = {
+      month: getMonthNumber(new Date(), 'next'),
+      year: getYearNumber(new Date(), 'next'),
+    };
+    if (hasUserId) {
+      axios
+        .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule`, data, getApiHeader(user.token))
+        .then((response) => {
+          console.log(`In the GET request below, the month is zero-indexed. '/month/${data.month}' refers to getting the Shift Submission schedule for ${getMonthString(getMonthDate(new Date(), 'next'))}. Also, take note that you will have to retrieve the year and month on my end (client-side) as request URL parameters, instead of generating it yourself on the backend. Otherwise, we might have to deal with localisation issues on deployment. Heroku servers are based in the States.`);
+          console.log(`GET request of Worker Schedule API: '${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule'`);
+          console.log({ ...response.data });
+          console.log("We also see here that it's important for each item on shifts and leaves to have unique IDs (preferably no events on shift and leaves together share the same ID). This is because on editing, I need an identifier (ID) for the calendar event to modify.");
+          if (response.data.role === 'worker') {
+            const newEvents = [
+              ...response.data.leave_dates,
+              ...response.data.shift_dates,
+            ];
+            const rerenderedEvents = newEvents.map((event) => {
+              if (event.extendedProps.type === 'shift') {
+                return {
+                  ...event,
+                  classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
+                };
+              }
 
-      if (event.extendedProps.type === 'shift') {
-        return {
-          ...event,
-          title,
-          classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
-        };
-      }
-
-      return {
-        ...event,
-        title,
-        classNames: ['leave-block'],
-      };
-    });
-    setEvents(rerenderedEvents);
-  }, []);
+              return {
+                ...event,
+                classNames: ['leave-block'],
+              };
+            });
+            setEvents([...rerenderedEvents]);
+            setIsWorker(true);
+            setIsLoading(false);
+          } else {
+            setIsWorker(false);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          // handle error
+          setIsWorker(false);
+          setIsLoading(false);
+        });
+    } else {
+      setIsWorker(false);
+      setIsLoading(true);
+    }
+  }, [user]);
 
   const handleCloseAddModal = () => {
     setSelectedDate('');
@@ -105,7 +134,9 @@ export default function WorkerEditPage() {
 
   const handleShowEditDeleteModal = (info) => {
     const eventObj = {
+      id: info.extendedProps.id,
       title: info.title,
+      date: info.extendedProps.date,
       extendedProps: {
         ...info.extendedProps,
       },
@@ -119,6 +150,7 @@ export default function WorkerEditPage() {
     // get all events on selected day
     if (selectedEventType.trim() !== '') {
       const newEvent = {
+        id: currentEvents.length + 1,
         title: `${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
         date: selectedDate,
         classNames: (selectedEventType === 'shift')
@@ -127,7 +159,6 @@ export default function WorkerEditPage() {
         extendedProps: {
           id: currentEvents.length + 1,
           user_id: user.user_id,
-          real_name: user.real_name,
           type: selectedEventType,
           date: selectedDate,
         },
@@ -204,11 +235,11 @@ export default function WorkerEditPage() {
         extendedProps: {
           id: selectedEvent.extendedProps.id,
           user_id: user.user_id,
-          real_name: user.real_name,
           type: selectedEventType,
           date: selectedEvent.extendedProps.date,
         },
       };
+
       setEvents((oldEvents) => [
         ...oldEvents.filter(
           (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
@@ -220,15 +251,51 @@ export default function WorkerEditPage() {
     handleCloseEditModal();
   };
 
+  const userExists = !!user;
+  const userIdExists = userExists
+    && !Number.isNaN(Number(user.user_id)) && (user.user_id !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
+
+  if (isLoading) {
+    return (
+      <div className="container pt-5 pb-5">
+        <div className="row w-100 pt-3">
+          <div className="col-12 pt-1 d-flex justify-content-center">
+            <div className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return <Redirect to="/" />;
+  }
+
+  if (!isWorker && !isLoading) {
+    return (
+      <Error404 />
+    );
+  }
+
   return (
-    <div className="container-fluid pt-5">
+    <div className="container pt-5 pb-3">
       <div className="row w-100 pt-3">
         <div className="col-12 pt-1">
-          <h3>
+          <h4 className="text-center">
+            Shift Submission →
+            {' '}
             {getMonthString(nextMonthDate)}
             {' '}
             {getYearString(nextMonthDate)}
-          </h3>
+          </h4>
+          <p className="text-center">
+            <small className="fade-text-color">Your changes will be automatically saved.</small>
+          </p>
           <hr />
         </div>
         <div className="col-12 pt-3">

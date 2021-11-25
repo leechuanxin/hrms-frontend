@@ -164,7 +164,9 @@ export default function App() {
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <WorkerEdit />
+                <WorkerEdit
+                  user={user}
+                />
               </NavbarWrapper>
             )}
           />
