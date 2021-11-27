@@ -36,6 +36,9 @@ export default function LoginPage({
   const [globalErrorMessage, setGlobalErrorMessage] = useState(
     sessionExpired ? errors.SESSION_EXPIRED_ERROR_MESSAGE : '',
   );
+  const [usernameInvalidMessage, setUsernameInvalidMessage] = useState('');
+  const [passwordInvalidMessage, setPasswordInvalidMessage] = useState('');
+
   const [username, setUsername] = useState(query.get('username') || '');
   const [password, setPassword] = useState('');
 
@@ -63,6 +66,9 @@ export default function LoginPage({
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    let usernameInvalid = '';
+    let passwordInvalid = '';
+
     const data = {
       username,
       password,
@@ -71,18 +77,36 @@ export default function LoginPage({
     axios
       .post(`${REACT_APP_BACKEND_URL}/api/login/`, data)
       .then((response) => {
-        const newData = {
-          ...response.data,
-        };
-        localStorageService.setItem('token', response.data.token);
-        localStorageService.setItem('user_id', response.data.user_id);
-        localStorageService.setItem('username', response.data.username);
-        localStorageService.setItem('org_id', response.data.org_id);
-        localStorageService.setItem('role', response.data.role);
-        console.log(`POST request of Login API: '${REACT_APP_BACKEND_URL}/api/login/'`);
-        console.log({ ...response.data });
+        if (response.data.error) {
+          window.scrollTo(0, 0);
 
-        dispatch(addUser({ ...newData }));
+          if (
+            response.data.error === errors.LOGIN_INPUT_VALIDATION_ERROR_MESSAGE
+          ) {
+            if (response.data.username_invalid) {
+              usernameInvalid = response.data.username_invalid;
+            }
+
+            if (response.data.password_invalid) {
+              passwordInvalid = response.data.password_invalid;
+            }
+          }
+
+          setUsernameInvalidMessage(usernameInvalid);
+          setPasswordInvalidMessage(passwordInvalid);
+          setGlobalErrorMessage(errors.LOGIN_GLOBAL_ERROR_MESSAGE);
+        } else {
+          const newData = {
+            ...response.data,
+          };
+          localStorageService.setItem('token', response.data.token);
+          localStorageService.setItem('user_id', response.data.user_id);
+          localStorageService.setItem('username', response.data.username);
+          localStorageService.setItem('organisation_id', response.data.organisation_id);
+          localStorageService.setItem('role', response.data.role);
+
+          dispatch(addUser({ ...newData }));
+        }
       })
       .catch(() => {
         // handle error
@@ -123,7 +147,9 @@ export default function LoginPage({
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control${
+                    usernameInvalidMessage.trim() !== '' ? ' is-invalid' : ''
+                  }`}
                   id="userName"
                   name="username"
                   placeholder="e.g. chee_kean"
@@ -138,7 +164,9 @@ export default function LoginPage({
                 </label>
                 <input
                   type="password"
-                  className="form-control"
+                  className={`form-control${
+                    passwordInvalidMessage.trim() !== '' ? ' is-invalid' : ''
+                  }`}
                   id="password"
                   name="password"
                   value={password}

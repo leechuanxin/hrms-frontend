@@ -61,14 +61,14 @@ export default function App() {
     const token = localStorageService.getItem('token');
     const userId = localStorageService.getItem('user_id');
     const username = localStorageService.getItem('username');
-    const orgId = localStorageService.getItem('org_id');
+    const organisationId = localStorageService.getItem('organisation_id');
     const role = localStorageService.getItem('role');
 
-    if (!token || !userId || !username || !orgId || !role) {
+    if (!token || !userId || !username || !organisationId || !role) {
       localStorageService.removeItem('token');
       localStorageService.removeItem('user_id');
       localStorageService.removeItem('username');
-      localStorageService.removeItem('org_id');
+      localStorageService.removeItem('organisation_id');
       localStorageService.removeItem('role');
       dispatch(deleteUser());
     } else {
@@ -77,7 +77,7 @@ export default function App() {
           token,
           user_id: Number(userId),
           username,
-          org_id: Number(orgId),
+          organisation_id: Number(organisationId),
           role,
         }),
       );
@@ -89,7 +89,7 @@ export default function App() {
     localStorageService.removeItem('token');
     localStorageService.removeItem('user_id');
     localStorageService.removeItem('username');
-    localStorageService.removeItem('org_id');
+    localStorageService.removeItem('organisation_id');
     localStorageService.removeItem('role');
     dispatch(deleteUser());
   };

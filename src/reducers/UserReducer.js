@@ -2,7 +2,7 @@ export const initialState = {
   token: '',
   user_id: 0,
   username: '',
-  org_id: 0,
+  organisation_id: 0,
   role: '',
 };
 
@@ -22,7 +22,7 @@ export function userReducer(state, action) {
         token: '',
         user_id: 0,
         username: '',
-        org_id: 0,
+        organisation_id: 0,
         role: '',
       };
     default:
