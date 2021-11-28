@@ -155,7 +155,7 @@ export default function WorkerEditPage({ user }) {
       };
 
       axios
-        .post(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/schedule`, data, getApiHeader(user.token))
+        .post(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/event`, data, getApiHeader(user.token))
         .then((response) => {
           if (response.data.newEvent) {
             const { dateAt } = response.data.newEvent;
@@ -230,9 +230,23 @@ export default function WorkerEditPage({ user }) {
   const handleEventDrop = (info) => handleMoveEvent(info.event);
 
   const handleDeleteEvent = () => {
-    setEvents((newEvents) => [...newEvents].filter(
-      (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
-    ));
+    axios
+      .delete(
+        `${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/event/${selectedEvent.extendedProps.id}`,
+        getApiHeader(user.token),
+      )
+      .then((response) => {
+        if (!response.data.isError) {
+          setEvents((newEvents) => [...newEvents].filter(
+            (currentEvent) => (currentEvent.extendedProps.id !== Number(response.data.eventId)),
+          ));
+        }
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+
     handleClearSelectedEvent();
     handleCloseEditDeleteModal();
   };
