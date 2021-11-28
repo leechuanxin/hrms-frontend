@@ -269,28 +269,68 @@ export default function WorkerEditPage({ user }) {
   };
 
   const handleEditSubmit = () => {
+    let modifiedEvent = {};
     if (selectedEventType.trim() !== '') {
-      const modifiedEvent = {
-        title: `${selectedEventType.substring(0, 1).toUpperCase()}`
-          + `${selectedEventType.substring(1)}`,
-        date: selectedEvent.extendedProps.date,
-        classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(user.user_id) % 50}`]
-          : ['leave-block'],
-        extendedProps: {
-          id: selectedEvent.extendedProps.id,
-          user_id: user.user_id,
-          type: selectedEventType,
-          date: selectedEvent.extendedProps.date,
-        },
+      const data = {
+        organisationId: user.organisation_id,
+        type: selectedEventType,
+        dateAt: new Date(selectedEvent.extendedProps.date),
       };
+      axios
+        .put(
+          `${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/event/${selectedEvent.extendedProps.id}`,
+          data,
+          getApiHeader(user.token),
+        )
+        .then((response) => {
+          if (!response.data.isError) {
+            if (response.data.modifiedEvent) {
+              const { dateAt } = response.data.modifiedEvent;
+              const dateAtObj = new Date(dateAt);
 
-      setEvents((oldEvents) => [
-        ...oldEvents.filter(
-          (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
-        ),
-        { ...modifiedEvent },
-      ]);
+              const yearNumberStr = `${dateAtObj.getFullYear()}`;
+              let monthNumberStr = `${dateAtObj.getMonth() + 1}`;
+              let dateNumberStr = `${dateAtObj.getDate()}`;
+
+              if (monthNumberStr < 2) {
+                monthNumberStr = `0${monthNumberStr}`;
+              }
+
+              if (dateNumberStr.length < 2) {
+                dateNumberStr = `0${dateNumberStr}`;
+              }
+
+              modifiedEvent = {
+                ...response.data.modifiedEvent,
+                classNames: (response.data.modifiedEvent.type === 'shift')
+                  ? [`shift-block-${response.data.modifiedEvent.userId % 50}`]
+                  : ['leave-block'],
+                date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+                extendedProps: {
+                  id: response.data.modifiedEvent.id,
+                  userId: response.data.modifiedEvent.userId,
+                  realName: response.data.modifiedEvent.realName,
+                  type: response.data.modifiedEvent.type,
+                  title: response.data.modifiedEvent.title,
+                  date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+                },
+              };
+
+              setEvents((oldEvents) => [
+                ...oldEvents.filter(
+                  (oldEvent) => oldEvent.extendedProps.id !== modifiedEvent.id,
+                ),
+                { ...modifiedEvent },
+              ]);
+            }
+          } else {
+            console.log(response.data.error);
+          }
+        })
+        .catch((error) => {
+        // handle error
+          console.log(error);
+        });
     }
 
     handleCloseEditModal();
