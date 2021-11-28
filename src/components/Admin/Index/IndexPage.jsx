@@ -122,26 +122,6 @@ export default function AdminIndexPage({ user }) {
   const [workers, setWorkers] = useState([]);
 
   useEffect(() => {
-    const newEvents = [...events];
-    const rerenderedEvents = newEvents.map((event) => {
-      if (event.extendedProps.type === 'shift') {
-        return {
-          ...event,
-          title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-          classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
-        };
-      }
-
-      return {
-        ...event,
-        title: `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-        classNames: ['leave-block'],
-      };
-    });
-    setEvents(rerenderedEvents);
-  }, []);
-
-  useEffect(() => {
     const hasUserId = !!user && user.user_id;
     const data = {
       month: getMonthNumber(new Date(), 'next'),
@@ -263,6 +243,9 @@ export default function AdminIndexPage({ user }) {
               </div>
             </div>
             <div className="col-12"><hr /></div>
+            <div className="col-12 pt-3">
+              <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+            </div>
             <div className="col-12 pt-3">
               <FullCalendar
                 plugins={[dayGridPlugin]}
