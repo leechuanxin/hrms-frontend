@@ -68,20 +68,17 @@ export default function WorkerEditPage({ user }) {
       axios
         .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule`, data, getApiHeader(user.token))
         .then((response) => {
-          console.log(`In the GET request below, the month is zero-indexed. '/month/${data.month}' refers to getting the Shift Submission schedule for ${getMonthString(getMonthDate(new Date(), 'next'))}. Also, take note that you will have to retrieve the year and month on my end (client-side) as request URL parameters, instead of generating it yourself on the backend. Otherwise, we might have to deal with localisation issues on deployment. Heroku servers are based in the States.`);
-          console.log(`GET request of Worker Schedule API: '${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule'`);
           console.log({ ...response.data });
-          console.log("We also see here that it's important for each item on shifts and leaves to have unique IDs (preferably no events on shift and leaves together share the same ID). This is because on editing, I need an identifier (ID) for the calendar event to modify.");
           if (response.data.role === 'worker') {
             const newEvents = [
-              ...response.data.leave_dates,
-              ...response.data.shift_dates,
+              ...response.data.leaveDates,
+              ...response.data.shiftDates,
             ];
             const rerenderedEvents = newEvents.map((event) => {
               if (event.extendedProps.type === 'shift') {
                 return {
                   ...event,
-                  classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
+                  classNames: [`shift-block-${Number(event.extendedProps.userId) % 50}`],
                 };
               }
 
