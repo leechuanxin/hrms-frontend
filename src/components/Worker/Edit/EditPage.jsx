@@ -68,7 +68,6 @@ export default function WorkerEditPage({ user }) {
       axios
         .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule`, data, getApiHeader(user.token))
         .then((response) => {
-          console.log({ ...response.data });
           if (response.data.role === 'worker') {
             const newEvents = [
               ...response.data.leaveDates,
@@ -143,24 +142,59 @@ export default function WorkerEditPage({ user }) {
   };
 
   const handleModalAddSubmit = () => {
-    const currentEvents = [...events];
     // get all events on selected day
+    let newEvent = {};
     if (selectedEventType.trim() !== '') {
-      const newEvent = {
-        id: currentEvents.length + 1,
-        title: `${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
-        date: selectedDate,
-        classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(user.user_id) % 50}`]
-          : ['leave-block'],
-        extendedProps: {
-          id: currentEvents.length + 1,
-          user_id: user.user_id,
-          type: selectedEventType,
-          date: selectedDate,
-        },
+      const data = {
+        userId: user.user_id,
+        organisationId: user.organisation_id,
+        type: selectedEventType,
+        dateAt: new Date(selectedDate),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
-      setEvents((oldEvents) => ([...oldEvents, newEvent]));
+
+      axios
+        .post(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/schedule`, data, getApiHeader(user.token))
+        .then((response) => {
+          if (response.data.newEvent) {
+            const { dateAt } = response.data.newEvent;
+            const dateAtObj = new Date(dateAt);
+
+            const yearNumberStr = `${dateAtObj.getFullYear()}`;
+            let monthNumberStr = `${dateAtObj.getMonth() + 1}`;
+            let dateNumberStr = `${dateAtObj.getDate()}`;
+
+            if (monthNumberStr < 2) {
+              monthNumberStr = `0${monthNumberStr}`;
+            }
+
+            if (dateNumberStr.length < 2) {
+              dateNumberStr = `0${dateNumberStr}`;
+            }
+
+            newEvent = {
+              ...response.data.newEvent,
+              classNames: (response.data.newEvent.type === 'shift')
+                ? [`shift-block-${response.data.newEvent.userId % 50}`]
+                : ['leave-block'],
+              date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              extendedProps: {
+                id: response.data.newEvent.id,
+                userId: response.data.newEvent.userId,
+                realName: response.data.newEvent.realName,
+                type: response.data.newEvent.type,
+                title: response.data.newEvent.title,
+                date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              },
+            };
+            setEvents((oldEvents) => ([...oldEvents, newEvent]));
+          }
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+        });
     }
 
     handleCloseAddModal();
