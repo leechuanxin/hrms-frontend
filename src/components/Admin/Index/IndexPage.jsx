@@ -47,7 +47,7 @@ function AdminIndexShiftSummary({ workers }) {
             <tbody>
               {
                 workers.map((worker) => (
-                  <tr>
+                  <tr key={worker.id}>
                     <td>{worker.realName}</td>
                     <td className={((worker.remainingShiftsStatus && worker.remainingShiftsStatus.trim() !== '') ? `table-${worker.remainingShiftsStatus} text-center` : 'text-center')}>
                       {worker.remainingShifts}
@@ -117,8 +117,8 @@ export default function AdminIndexPage({ user }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(true);
-  const [, setUserId] = useState(0);
-  const [, setRealName] = useState('');
+  const [userId, setUserId] = useState(0);
+  const [realName, setRealName] = useState('');
   const [workers, setWorkers] = useState([]);
 
   useEffect(() => {
@@ -225,6 +225,22 @@ export default function AdminIndexPage({ user }) {
   return (
     <div className="container pt-5">
       <div className="row w-100 pt-3 pb-5">
+        <div className="col-12 pt-1 d-flex justify-content-center align-items-center">
+          <div className="me-4">
+            <span className="square-image-wrapper">
+              <span className="square-image circle">
+                <img alt={`${realName}`} src={`https://avatars.dicebear.com/api/croodles-neutral/${userId}.svg`} />
+              </span>
+            </span>
+          </div>
+          <div>
+            <h3>{realName}</h3>
+            <p className="mb-0 fade-text-color">
+              <strong>Admin</strong>
+            </p>
+          </div>
+        </div>
+        <div className="col-12"><hr /></div>
         <div className="d-none d-md-block col-md-5">
           <AdminIndexShiftSummary workers={workers} />
         </div>
