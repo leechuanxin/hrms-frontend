@@ -180,7 +180,9 @@ export default function App() {
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <AdminIndex />
+                <AdminIndex
+                  user={user}
+                />
               </NavbarWrapper>
             )}
           />
