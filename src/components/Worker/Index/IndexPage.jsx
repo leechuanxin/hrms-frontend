@@ -96,26 +96,6 @@ export default function WorkerIndexPage({ user }) {
   const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
 
   useEffect(() => {
-    const newEvents = [...events];
-    const rerenderedEvents = newEvents.map((event) => {
-      if (event.extendedProps.type === 'shift') {
-        return {
-          ...event,
-          title: `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-          classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
-        };
-      }
-
-      return {
-        ...event,
-        title: `${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`,
-        classNames: ['leave-block'],
-      };
-    });
-    setEvents(rerenderedEvents);
-  }, []);
-
-  useEffect(() => {
     const hasUserId = !!user && user.user_id;
     const data = {
       month: getMonthNumber(new Date(), 'next'),
@@ -125,19 +105,16 @@ export default function WorkerIndexPage({ user }) {
       axios
         .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule`, data, getApiHeader(user.token))
         .then((response) => {
-          console.log(`In the GET request below, the month is zero-indexed. '/month/${data.month}' refers to getting the Shift Submission schedule for ${getMonthString(getMonthDate(new Date(), 'next'))}. Also, take note that you will have to retrieve the year and month on my end (client-side) as request URL parameters, instead of generating it yourself on the backend. Otherwise, we might have to deal with localisation issues on deployment. Heroku servers are based in the States.`);
-          console.log(`GET request of Worker Schedule API: '${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule'`);
-          console.log({ ...response.data });
           if (response.data.role === 'worker') {
             const newEvents = [
-              ...response.data.leave_dates,
-              ...response.data.shift_dates,
+              ...response.data.leaveDates,
+              ...response.data.shiftDates,
             ];
             const rerenderedEvents = newEvents.map((event) => {
               if (event.extendedProps.type === 'shift') {
                 return {
                   ...event,
-                  classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
+                  classNames: [`shift-block-${Number(event.extendedProps.userId) % 50}`],
                 };
               }
 
@@ -146,10 +123,10 @@ export default function WorkerIndexPage({ user }) {
                 classNames: ['leave-block'],
               };
             });
-            setLeavesLeft(response.data.remainder_leaves);
-            setShiftsLeft(response.data.remainder_shifts);
-            setRealName(response.data.real_name);
-            setUserId(response.data.user_id);
+            setLeavesLeft(response.data.remainingLeaves);
+            setShiftsLeft(response.data.remainingShifts);
+            setRealName(response.data.realName);
+            setUserId(response.data.userId);
             setEvents([...rerenderedEvents]);
             setIsWorker(true);
             setIsLoading(false);
