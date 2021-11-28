@@ -216,9 +216,6 @@ export default function AdminIndexPage({ user }) {
     );
   }
 
-  console.log('isAdmin:');
-  console.log(isAdmin);
-
   if (!isAdmin && !isLoading) {
     return (
       <Error404 />
@@ -235,14 +232,16 @@ export default function AdminIndexPage({ user }) {
           <div className="row">
             <div className="col-12 pt-1">
               <div className="row align-items-center">
-                <div className="col-6">
+                <div className="col-8">
                   <h4 className="mb-0">
                     Shift Overview →
                     {' '}
                     {getNextMonthString(nextMonthDate)}
+                    {' '}
+                    {getYearNumber(new Date(), 'next')}
                   </h4>
                 </div>
-                <div className="col-6  d-flex justify-content-end">
+                <div className="col-4  d-flex justify-content-end">
                   <Link className="btn btn-success" to="/adminoptimise" role="button">Optimise</Link>
                 </div>
               </div>
