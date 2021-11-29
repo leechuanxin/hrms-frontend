@@ -208,7 +208,7 @@ export default function App() {
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <AdminEdit />
+                <AdminEdit user={user} />
               </NavbarWrapper>
             )}
           />

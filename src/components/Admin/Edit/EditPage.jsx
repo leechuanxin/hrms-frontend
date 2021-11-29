@@ -1,14 +1,22 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
+import {
+  Redirect,
+} from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // for selectable
+import axios from 'axios';
 // CUSTOM IMPORTS
+import REACT_APP_BACKEND_URL from '../../../modules/urls.mjs';
+import getApiHeader from '../../../modules/api-headers.mjs';
+// CUSTOM IMPORTS
+import Error404 from '../../Error/Error404Page.jsx';
 import AdminAddEventModal from './Modals/AdminAddEventModal.jsx';
 import AdminEditDeleteEventModal from './Modals/AdminEditDeleteEventModal.jsx';
 import AdminEditEventModal from './Modals/AdminEditEventModal.jsx';
 
-export default function EditPage() {
+export default function EditPage({ user }) {
   const getMonthDate = (date, type) => {
     const currentMonth = date.getMonth();
     const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
@@ -16,6 +24,18 @@ export default function EditPage() {
     const year = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
     const monthDate = new Date(year, month, 1);
     return monthDate;
+  };
+  const getMonthNumber = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const monthNumber = (type === 'next') ? nextMonth : currentMonth;
+    return monthNumber;
+  };
+  const getYearNumber = (date, type) => {
+    const currentMonth = date.getMonth();
+    const nextMonth = (currentMonth === 11) ? 0 : date.getMonth() + 1;
+    const yearNumber = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
+    return yearNumber;
   };
   const getMonthString = (date) => {
     const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
@@ -28,52 +48,8 @@ export default function EditPage() {
     return yearStr;
   };
   const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
-  const [users] = useState([
-    {
-      user_id: 1,
-      real_name: 'Lee Chuan Xin',
-    },
-    {
-      user_id: 2,
-      real_name: 'Wong Shen Nan',
-    },
-    {
-      user_id: 3,
-      real_name: 'Chiew Jia En',
-    },
-    {
-      user_id: 4,
-      real_name: 'Justin Wong',
-    },
-    {
-      user_id: 5,
-      real_name: 'Akira Wong',
-    },
-  ]);
   const [eventTypes] = useState(['shift', 'leave']);
-  const [events, setEvents] = useState([
-    {
-      title: '',
-      date: '2021-12-03',
-      extendedProps: {
-        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
-      },
-    },
-    {
-      title: '',
-      date: '2021-12-07',
-      extendedProps: {
-        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
-      },
-    },
-    {
-      title: '',
-      date: '2021-12-08',
-      extendedProps: {
-        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-12-08',
-      },
-    },
-  ]);
+  const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditDeleteModal, setShowEditDeleteModal] = useState(false);
@@ -82,27 +58,88 @@ export default function EditPage() {
   const [selectedEventType, setSelectedEventType] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  const [, setUserId] = useState(0);
+  const [, setRealName] = useState('');
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [workers, setWorkers] = useState([]);
+  const [, setSchedules] = useState([]);
+  const [, setHasOptimisedSchedule] = useState(false);
+
   useEffect(() => {
-    const newEvents = [...events];
-    const rerenderedEvents = newEvents.map((event) => {
-      const title = `${event.extendedProps.real_name}'s ${event.extendedProps.type.substring(0, 1).toUpperCase()}${event.extendedProps.type.substring(1)}`;
+    const hasUserId = !!user && user.user_id;
+    const data = {
+      month: getMonthNumber(new Date(), 'next'),
+      year: getYearNumber(new Date(), 'next'),
+    };
+    if (hasUserId) {
+      axios
+        .get(`${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/year/${data.year}/month/${data.month}/optimisations`, data, getApiHeader(user.token))
+        .then((response) => {
+          if (response.data.role === 'admin') {
+            let newSchedules = [...response.data.schedules];
+            newSchedules = newSchedules.map((newSchedule) => {
+              const newOptimisations = [
+                ...newSchedule.optimisations,
+              ];
+              const rerenderedOptimisations = newOptimisations.map((event) => {
+                if (event.extendedProps.type === 'shift') {
+                  return {
+                    ...event,
+                    classNames: [`shift-block-${Number(event.extendedProps.userId) % 50}`],
+                  };
+                }
 
-      if (event.extendedProps.type === 'shift') {
-        return {
-          ...event,
-          title,
-          classNames: [`shift-block-${Number(event.extendedProps.user_id) % 50}`],
-        };
-      }
+                return {
+                  ...event,
+                  classNames: ['leave-block'],
+                };
+              });
 
-      return {
-        ...event,
-        title,
-        classNames: ['leave-block'],
-      };
-    });
-    setEvents(rerenderedEvents);
-  }, []);
+              return {
+                ...newSchedule,
+                optimisations: rerenderedOptimisations,
+              };
+            });
+            setRealName(response.data.realName);
+            setUserId(response.data.userId);
+            setWorkers([...response.data.workers]);
+            setSchedules([...newSchedules]);
+            setIsAdmin(true);
+            setIsLoading(false);
+            if (response.data.scheduleSelected) {
+              let optimisedSchedulePut = [...response.data.optimisedSchedule];
+              optimisedSchedulePut = optimisedSchedulePut.map((optimisedEvent) => {
+                if (optimisedEvent.extendedProps.type === 'shift') {
+                  return {
+                    ...optimisedEvent,
+                    classNames: [`shift-block-${Number(optimisedEvent.extendedProps.userId) % 50}`],
+                  };
+                }
+
+                return {
+                  ...optimisedEvent,
+                  classNames: ['leave-block'],
+                };
+              });
+              setHasOptimisedSchedule(true);
+              setEvents([...optimisedSchedulePut]);
+            }
+          } else {
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          // handle error
+          setIsAdmin(false);
+          setIsLoading(false);
+        });
+    } else {
+      setIsAdmin(false);
+      setIsLoading(true);
+    }
+  }, [user]);
 
   const handleCloseAddModal = () => {
     setCurrentDate('');
@@ -165,7 +202,9 @@ export default function EditPage() {
   };
 
   const handleSelectUser = (e) => {
-    const selected = users.filter((user) => user.user_id === Number(e.target.value))[0];
+    const selected = workers.filter(
+      (selectedU) => selectedU.user_id === Number(e.target.value),
+    )[0];
     setSelectedUser(selected);
   };
 
@@ -215,7 +254,7 @@ export default function EditPage() {
           real_name: selectedEvent.extendedProps.real_name,
         }
         : {
-          ...users[0],
+          ...workers[0],
         },
     );
     setSelectedEventType(
@@ -262,6 +301,37 @@ export default function EditPage() {
     handleCloseEditModal();
   };
 
+  const userExists = !!user;
+  const userIdExists = userExists
+    && !Number.isNaN(Number(user.user_id)) && (user.user_id !== 0);
+  const usernameExists = userExists && (user.username && user.username.trim() !== '');
+  const userTokenExists = userExists && (user.token && user.token.trim() !== '');
+  const isLoggedIn = user && userIdExists && usernameExists && userTokenExists;
+
+  if (isLoading) {
+    return (
+      <div className="container pt-5 pb-5">
+        <div className="row w-100 pt-3">
+          <div className="col-12 pt-1 d-flex justify-content-center">
+            <div className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin && !isLoading) {
+    return (
+      <Error404 />
+    );
+  }
+
+  if (!isLoggedIn) {
+    return <Redirect to="/" />;
+  }
+
   return (
     <div className="container-fluid pt-5">
       <div className="row w-100 pt-3">
@@ -289,7 +359,7 @@ export default function EditPage() {
         </div>
         {/* Add Modal */}
         <AdminAddEventModal
-          users={users}
+          users={workers}
           eventTypes={eventTypes}
           showModal={showAddModal}
           onHideModal={handleCloseAddModal}
@@ -306,7 +376,7 @@ export default function EditPage() {
         />
         {/* Edit Modal */}
         <AdminEditEventModal
-          users={users}
+          users={workers}
           eventTypes={eventTypes}
           selectedEvent={selectedEvent}
           showModal={showEditModal}
