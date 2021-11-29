@@ -30,6 +30,7 @@ import AdminOptimise from './components/Admin/Optimise/OptimisePage.jsx';
 // worker pages
 import WorkerIndex from './components/Worker/Index/IndexPage.jsx';
 import WorkerEdit from './components/Worker/Edit/EditPage.jsx';
+import WorkerView from './components/Worker/View/ViewPage.jsx';
 // other pages
 import Index from './components/Index/IndexPage.jsx';
 import Error404 from './components/Error/Error404Page.jsx';
@@ -165,6 +166,21 @@ export default function App() {
                 handleSetNavbar={handleSetNavbar}
               >
                 <WorkerEdit
+                  user={user}
+                />
+              </NavbarWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/workerview"
+            render={() => (
+              <NavbarWrapper
+                navbarForAuth={false}
+                setIsAuthPage={setIsAuthPage}
+                handleSetNavbar={handleSetNavbar}
+              >
+                <WorkerView
                   user={user}
                 />
               </NavbarWrapper>

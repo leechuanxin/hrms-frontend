@@ -13,15 +13,15 @@ import Error404 from '../../Error/Error404Page.jsx';
 // make sure that axios always sends the cookies to the backend server
 axios.defaults.withCredentials = true;
 
-function WorkerIndexAlert({ getMonthString, getYearString, currentMonthDate }) {
-  // dummy block
-  const test = true;
-  if (test) {
+function WorkerIndexAlert({
+  hasOptimisedSchedule, getMonthString, getYearString, nextMonthDate,
+}) {
+  if (!hasOptimisedSchedule) {
     return null;
   }
   return (
     <div className="col-12 pt-1">
-      <div className="alert alert-warning d-flex align-items-center" role="alert">
+      <div className="alert alert-warning d-flex align-items-center justify-content-center" role="alert">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           style={{ display: 'none' }}
@@ -40,13 +40,16 @@ function WorkerIndexAlert({ getMonthString, getYearString, currentMonthDate }) {
           <use xlinkHref="#exclamation-triangle-fill" />
         </svg>
         <div>
-          Schedule for
+          Workers&apos; shift schedule for
           {' '}
-          {getMonthString(currentMonthDate)}
+          {getMonthString(nextMonthDate)}
           {' '}
-          {getYearString(currentMonthDate)}
+          {getYearString(nextMonthDate)}
           {' '}
-          is out! Click here
+          is finalised and out!
+          {' '}
+          <Link to="/workerview">Click here to view it</Link>
+          .
         </div>
       </div>
     </div>
@@ -61,6 +64,7 @@ export default function WorkerIndexPage({ user }) {
   const [shiftsLeft, setShiftsLeft] = useState(0);
   const [leavesLeft, setLeavesLeft] = useState(0);
   const [events, setEvents] = useState([]);
+  const [hasOptimisedSchedule, setHasOptimisedSchedule] = useState(false);
 
   const getMonthNumber = (date, type) => {
     const currentMonth = date.getMonth();
@@ -92,7 +96,6 @@ export default function WorkerIndexPage({ user }) {
     const yearStr = formatter.format(date);
     return yearStr;
   };
-  const [currentMonthDate] = useState(getMonthDate(new Date('2021-11-30'), 'current'));
   const [nextMonthDate] = useState(getMonthDate(new Date('2021-11-30'), 'next'));
 
   useEffect(() => {
@@ -105,6 +108,8 @@ export default function WorkerIndexPage({ user }) {
       axios
         .get(`${REACT_APP_BACKEND_URL}/api/worker/${user.user_id}/year/${data.year}/month/${data.month}/schedule`, data, getApiHeader(user.token))
         .then((response) => {
+          console.log('worker index:');
+          console.log(response.data);
           if (response.data.role === 'worker') {
             const newEvents = [
               ...response.data.leaveDates,
@@ -130,6 +135,9 @@ export default function WorkerIndexPage({ user }) {
             setEvents([...rerenderedEvents]);
             setIsWorker(true);
             setIsLoading(false);
+            if (response.data.scheduleSelected) {
+              setHasOptimisedSchedule(true);
+            }
           } else {
             setIsWorker(false);
             setIsLoading(false);
@@ -181,9 +189,10 @@ export default function WorkerIndexPage({ user }) {
     <div className="container pt-5 pb-5">
       <div className="row w-100 pt-3">
         <WorkerIndexAlert
+          hasOptimisedSchedule={hasOptimisedSchedule}
           getMonthString={getMonthString}
           getYearString={getYearString}
-          currentMonthDate={currentMonthDate}
+          nextMonthDate={nextMonthDate}
         />
         <div className="col-12 pt-1 d-flex justify-content-center align-items-center">
           <div className="me-4">
