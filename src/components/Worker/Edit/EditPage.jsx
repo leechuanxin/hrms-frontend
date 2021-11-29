@@ -56,7 +56,7 @@ export default function WorkerEditPage({ user }) {
     const yearStr = formatter.format(date);
     return yearStr;
   };
-  const [nextMonthDate] = useState(getMonthDate(new Date('2021-12-30'), 'next'));
+  const [nextMonthDate] = useState(getMonthDate(new Date('2021-11-30'), 'next'));
 
   useEffect(() => {
     const hasUserId = !!user && user.user_id;

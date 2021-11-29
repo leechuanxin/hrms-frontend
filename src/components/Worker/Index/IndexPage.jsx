@@ -92,8 +92,8 @@ export default function WorkerIndexPage({ user }) {
     const yearStr = formatter.format(date);
     return yearStr;
   };
-  const [currentMonthDate] = useState(getMonthDate(new Date('2021-12-30'), 'current'));
-  const [nextMonthDate] = useState(getMonthDate(new Date('2021-12-30'), 'next'));
+  const [currentMonthDate] = useState(getMonthDate(new Date('2021-11-30'), 'current'));
+  const [nextMonthDate] = useState(getMonthDate(new Date('2021-11-30'), 'next'));
 
   useEffect(() => {
     const hasUserId = !!user && user.user_id;
