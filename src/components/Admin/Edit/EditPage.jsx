@@ -287,9 +287,23 @@ export default function EditPage({ user }) {
   const handleEventDrop = (info) => handleMoveEvent(info.event);
 
   const handleDeleteEvent = () => {
-    setEvents((newEvents) => [...newEvents].filter(
-      (currentEvent) => (currentEvent.extendedProps.id !== selectedEvent.extendedProps.id),
-    ));
+    axios
+      .delete(
+        `${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/optimisation/${selectedEvent.extendedProps.id}`,
+        getApiHeader(user.token),
+      )
+      .then((response) => {
+        if (!response.data.isError) {
+          setEvents((newEvents) => [...newEvents].filter(
+            (currentEvent) => (currentEvent.extendedProps.id !== Number(response.data.eventId)),
+          ));
+        }
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+
     handleClearSelectedEvent();
     handleCloseEditDeleteModal();
   };
