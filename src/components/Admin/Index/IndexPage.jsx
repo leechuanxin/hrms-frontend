@@ -91,7 +91,7 @@ export default function AdminIndexPage({ user }) {
     const yearNumber = (type === 'next' && nextMonth === 0) ? date.getFullYear() + 1 : date.getFullYear();
     return yearNumber;
   };
-  const [nextMonthDate] = useState(getNextMonthDate(new Date()));
+  const [nextMonthDate] = useState(getNextMonthDate(new Date('2021-12-30')));
 
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(true);

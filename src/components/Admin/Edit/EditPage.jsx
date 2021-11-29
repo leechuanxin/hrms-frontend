@@ -47,7 +47,7 @@ export default function EditPage({ user }) {
     const yearStr = formatter.format(date);
     return yearStr;
   };
-  const [nextMonthDate] = useState(getMonthDate(new Date(), 'next'));
+  const [nextMonthDate] = useState(getMonthDate(new Date('2021-12-30'), 'next'));
   const [eventTypes] = useState(['shift', 'leave']);
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState('');
