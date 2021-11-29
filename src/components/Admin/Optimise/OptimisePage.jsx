@@ -168,7 +168,7 @@ export default function AdminOptimisePage({ user }) {
   }, [user]);
 
   const handleRadioChange = (event) => {
-    setSelectedOption(event.target.value);
+    setSelectedOption(Number(event.target.value));
   };
 
   const userExists = !!user;
