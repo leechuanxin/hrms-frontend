@@ -13,6 +13,139 @@ import getApiHeader from '../../../modules/api-headers.mjs';
 // Custom Components
 import Error404 from '../../Error/Error404Page.jsx';
 
+function AdminOptimiseSelectInterface({
+  nextMonthDate,
+  schedules,
+  selectedOption,
+  handleRadioChange,
+  handleConfirmClick,
+}) {
+  return (
+    <>
+      <div className="col-12">
+        <div className="row">
+          <div className="col-7">
+            <h4>Select an Optimised Schedule</h4>
+          </div>
+          <div className="col-5 d-flex justify-content-end">
+            <button type="button" className="btn btn-primary" onClick={handleConfirmClick}>Confirm Schedule</button>
+          </div>
+        </div>
+      </div>
+      <div className="col-12"><hr /></div>
+      <div className="col-12 pt-1">
+        {schedules.map((schedule, index) => (
+          <div className="form-check pb-3" key={schedule.id}>
+            <div className="row">
+              <div className="col-1 d-flex justify-content-center">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="exampleRadios"
+                  id="exampleRadios1"
+                  value={schedule.id}
+                  checked={(selectedOption === schedule.id)}
+                  onChange={handleRadioChange}
+                />
+              </div>
+              <div className="col-11">
+                <div className="row">
+                  <div className="col-9">
+                    <label className="form-check-label w-100" htmlFor="exampleRadios1">
+                      <p>
+                        Choice #
+                        {index + 1}
+                      </p>
+                    </label>
+                  </div>
+                  <div className="col-3 d-flex justify-content-end">
+                    <div>
+                      <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+                    </div>
+                  </div>
+                </div>
+
+                <FullCalendar
+                  plugins={[interactionPlugin, dayGridPlugin]}
+                  initialView="dayGridMonth"
+                  headerToolbar={false}
+                  initialDate={nextMonthDate}
+                  events={schedule.optimisations}
+                  selectable
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="col-12 pt-3 d-flex justify-content-end">
+        <button type="button" className="btn btn-primary" onClick={handleConfirmClick}>Confirm Schedule</button>
+      </div>
+      <div className="col-12 d-md-none pt-3"><hr /></div>
+    </>
+  );
+}
+
+function AdminOptimiseEditInterface({
+  nextMonthDate,
+  optimisedSchedule,
+}) {
+  return (
+    <>
+      <div className="col-12">
+        <div className="row">
+          <div className="col-7">
+            <h4>Edit Optimised Schedule</h4>
+          </div>
+          <div className="col-5 d-flex justify-content-end">
+            <button type="button" className="btn btn-primary">Edit</button>
+          </div>
+        </div>
+      </div>
+      <div className="col-12"><hr /></div>
+      <div className="col-12 pt-1">
+        <FullCalendar
+          plugins={[interactionPlugin, dayGridPlugin]}
+          initialView="dayGridMonth"
+          headerToolbar={false}
+          initialDate={nextMonthDate}
+          selectable
+          events={optimisedSchedule}
+        />
+      </div>
+      <div className="col-12 d-md-none pt-3"><hr /></div>
+    </>
+  );
+}
+
+function AdminOptimiseMainInterface({
+  hasOptimisedSchedule,
+  nextMonthDate,
+  schedules,
+  selectedOption,
+  optimisedSchedule,
+  handleRadioChange,
+  handleConfirmClick,
+}) {
+  if (!hasOptimisedSchedule) {
+    return (
+      <AdminOptimiseSelectInterface
+        nextMonthDate={nextMonthDate}
+        schedules={schedules}
+        selectedOption={selectedOption}
+        handleRadioChange={handleRadioChange}
+        handleConfirmClick={handleConfirmClick}
+      />
+    );
+  }
+  return (
+    <AdminOptimiseEditInterface
+      nextMonthDate={nextMonthDate}
+      optimisedSchedule={optimisedSchedule}
+    />
+  );
+}
+
 function AdminOptimiseShiftSummary({ workers }) {
   if (workers.length === 0) {
     return null;
@@ -76,6 +209,8 @@ export default function AdminOptimisePage({ user }) {
   const [, setRealName] = useState('');
   const [workers, setWorkers] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [hasOptimisedSchedule, setHasOptimisedSchedule] = useState(false);
+  const [optimisedSchedule, setOptimisedSchedule] = useState([]);
 
   const getMonthDate = (date, type) => {
     const currentMonth = date.getMonth();
@@ -151,6 +286,24 @@ export default function AdminOptimisePage({ user }) {
             setSchedules([...newSchedules]);
             setIsAdmin(true);
             setIsLoading(false);
+            if (response.data.scheduleSelected) {
+              let optimisedSchedulePut = [...response.data.optimisedSchedule];
+              optimisedSchedulePut = optimisedSchedulePut.map((optimisedEvent) => {
+                if (optimisedEvent.extendedProps.type === 'shift') {
+                  return {
+                    ...optimisedEvent,
+                    classNames: [`shift-block-${Number(optimisedEvent.extendedProps.userId) % 50}`],
+                  };
+                }
+
+                return {
+                  ...optimisedEvent,
+                  classNames: ['leave-block'],
+                };
+              });
+              setHasOptimisedSchedule(true);
+              setOptimisedSchedule([...optimisedSchedulePut]);
+            }
           } else {
             setIsAdmin(false);
             setIsLoading(false);
@@ -169,6 +322,80 @@ export default function AdminOptimisePage({ user }) {
 
   const handleRadioChange = (event) => {
     setSelectedOption(Number(event.target.value));
+  };
+
+  const handleConfirmClick = (event) => {
+    event.preventDefault();
+    const data = {
+      month: getMonthNumber(new Date(), 'next'),
+      year: getYearNumber(new Date(), 'next'),
+    };
+    axios
+      .put(
+        `${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/schedule/${selectedOption}/select`,
+        data,
+        getApiHeader(user.token),
+      )
+      .then((response) => {
+        if (response.data.role === 'admin') {
+          let newSchedules = [...response.data.schedules];
+          newSchedules = newSchedules.map((newSchedule) => {
+            const newOptimisations = [
+              ...newSchedule.optimisations,
+            ];
+            const rerenderedOptimisations = newOptimisations.map((newOptimisation) => {
+              if (newOptimisation.extendedProps.type === 'shift') {
+                return {
+                  ...newOptimisation,
+                  classNames: [`shift-block-${Number(newOptimisation.extendedProps.userId) % 50}`],
+                };
+              }
+
+              return {
+                ...newOptimisation,
+                classNames: ['leave-block'],
+              };
+            });
+
+            return {
+              ...newSchedule,
+              optimisations: rerenderedOptimisations,
+            };
+          });
+          setSelectedOption(response.data.schedules[0].id);
+          setRealName(response.data.realName);
+          setUserId(response.data.userId);
+          setWorkers([...response.data.workers]);
+          setSchedules([...newSchedules]);
+          setIsAdmin(true);
+          setIsLoading(false);
+          if (response.data.scheduleSelected) {
+            let optimisedScheduleGet = [...response.data.optimisedSchedule];
+            optimisedScheduleGet = optimisedScheduleGet.map((optimisedEvent) => {
+              if (optimisedEvent.extendedProps.type === 'shift') {
+                return {
+                  ...optimisedEvent,
+                  classNames: [`shift-block-${Number(optimisedEvent.extendedProps.userId) % 50}`],
+                };
+              }
+
+              return {
+                ...optimisedEvent,
+                classNames: ['leave-block'],
+              };
+            });
+            setHasOptimisedSchedule(true);
+            setOptimisedSchedule([...optimisedScheduleGet]);
+          }
+        } else {
+          setIsAdmin(false);
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
   };
 
   const userExists = !!user;
@@ -217,66 +444,15 @@ export default function AdminOptimisePage({ user }) {
           <AdminOptimiseShiftSummary workers={workers} />
         </div>
         <div className="col-12 col-md-7 pt-3">
-          <div className="col-12">
-            <div className="row">
-              <div className="col-7">
-                <h4>Select an Optimised Schedule</h4>
-              </div>
-              <div className="col-5 d-flex justify-content-end">
-                <button type="button" className="btn btn-primary">Confirm Schedule</button>
-              </div>
-            </div>
-          </div>
-          <div className="col-12"><hr /></div>
-          <div className="col-12 pt-1">
-            {schedules.map((schedule, index) => (
-              <div className="form-check pb-3" key={schedule.id}>
-                <div className="row">
-                  <div className="col-1 d-flex justify-content-center">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="exampleRadios"
-                      id="exampleRadios1"
-                      value={schedule.id}
-                      checked={(selectedOption === schedule.id)}
-                      onChange={handleRadioChange}
-                    />
-                  </div>
-                  <div className="col-11">
-                    <div className="row">
-                      <div className="col-9">
-                        <label className="form-check-label w-100" htmlFor="exampleRadios1">
-                          <p>
-                            Choice #
-                            {index + 1}
-                          </p>
-                        </label>
-                      </div>
-                      <div className="col-3 d-flex justify-content-end">
-                        <div>
-                          <span className="badge rounded-pill bg-dark me-2">Leaves</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <FullCalendar
-                      plugins={[interactionPlugin, dayGridPlugin]}
-                      initialView="dayGridMonth"
-                      headerToolbar={false}
-                      initialDate={nextMonthDate}
-                      events={schedule.optimisations}
-                      selectable
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="col-12 pt-3 d-flex justify-content-end">
-            <button type="button" className="btn btn-primary">Confirm Schedule</button>
-          </div>
-          <div className="col-12 d-md-none pt-3"><hr /></div>
+          <AdminOptimiseMainInterface
+            hasOptimisedSchedule={hasOptimisedSchedule}
+            nextMonthDate={nextMonthDate}
+            schedules={schedules}
+            selectedOption={selectedOption}
+            optimisedSchedule={optimisedSchedule}
+            handleRadioChange={handleRadioChange}
+            handleConfirmClick={handleConfirmClick}
+          />
         </div>
         <div className="d-md-none col-12">
           <AdminOptimiseShiftSummary workers={workers} />
