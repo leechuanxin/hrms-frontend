@@ -18,7 +18,7 @@ export default function AdminAddEventModal({
           <Form.Select id="worker" aria-label="Select a worker" onChange={handleSelectUser} defaultValue="DEFAULT">
             <option value="DEFAULT" disabled>Select a worker</option>
             {users.map((user) => (
-              <option value={user.user_id} key={`user${user.user_id}`}>{user.real_name}</option>
+              <option value={user.id} key={`user${user.id}`}>{user.realName}</option>
             ))}
           </Form.Select>
           <div className="invalid-feedback">Test</div>

@@ -180,17 +180,17 @@ export default function EditPage({ user }) {
     const userSelected = { ...selectedUser };
     const currentEvents = [...events];
     // get all events on selected day
-    if (userSelected.user_id && selectedEventType.trim() !== '') {
+    if (userSelected.userId && selectedEventType.trim() !== '') {
       const newEvent = {
-        title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
+        title: `${userSelected.realName}`,
         date: currentDate,
         classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(userSelected.user_id) % 50}`]
+          ? [`shift-block-${Number(userSelected.userId) % 50}`]
           : ['leave-block'],
         extendedProps: {
           id: currentEvents.length + 1,
-          user_id: userSelected.user_id,
-          real_name: userSelected.real_name,
+          userId: userSelected.userId,
+          realName: userSelected.realName,
           type: selectedEventType,
           date: currentDate,
         },
@@ -203,7 +203,7 @@ export default function EditPage({ user }) {
 
   const handleSelectUser = (e) => {
     const selected = workers.filter(
-      (selectedU) => selectedU.user_id === Number(e.target.value),
+      (selectedU) => Number(selectedU.id) === Number(e.target.value),
     )[0];
     setSelectedUser(selected);
   };
@@ -216,21 +216,70 @@ export default function EditPage({ user }) {
   const handleMoveEvent = (event) => {
     // set new date
     // copy over other props
-    const eventObj = {
-      title: event.title,
-      extendedProps: {
-        ...event.extendedProps,
-        date: event.startStr,
-      },
-      date: event.startStr,
-      classNames: [...event.classNames],
+    // set new date
+    // copy over other props
+    const data = {
+      organisationId: user.organisation_id,
+      type: event.extendedProps.type,
+      dateAt: new Date(event.startStr),
+      workerId: 0,
     };
+    let modifiedEvent = {};
+    axios
+      .put(
+        `${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/optimisation/${event.extendedProps.id}`,
+        data,
+        getApiHeader(user.token),
+      )
+      .then((response) => {
+        if (!response.data.isError) {
+          if (response.data.modifiedEvent) {
+            const { dateAt } = response.data.modifiedEvent;
+            const dateAtObj = new Date(dateAt);
 
-    const newEvents = [...events].filter(
-      (filteredEvent) => (filteredEvent.extendedProps.id !== eventObj.extendedProps.id),
-    );
-    newEvents.push(eventObj);
-    setEvents([...newEvents]);
+            const yearNumberStr = `${dateAtObj.getFullYear()}`;
+            let monthNumberStr = `${dateAtObj.getMonth() + 1}`;
+            let dateNumberStr = `${dateAtObj.getDate()}`;
+
+            if (monthNumberStr < 2) {
+              monthNumberStr = `0${monthNumberStr}`;
+            }
+
+            if (dateNumberStr.length < 2) {
+              dateNumberStr = `0${dateNumberStr}`;
+            }
+
+            modifiedEvent = {
+              ...response.data.modifiedEvent,
+              classNames: (response.data.modifiedEvent.type === 'shift')
+                ? [`shift-block-${response.data.modifiedEvent.userId % 50}`]
+                : ['leave-block'],
+              date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              extendedProps: {
+                id: response.data.modifiedEvent.id,
+                userId: response.data.modifiedEvent.userId,
+                realName: response.data.modifiedEvent.realName,
+                type: response.data.modifiedEvent.type,
+                title: response.data.modifiedEvent.title,
+                date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              },
+            };
+
+            setEvents((oldEvents) => [
+              ...oldEvents.filter(
+                (oldEvent) => oldEvent.extendedProps.id !== modifiedEvent.id,
+              ),
+              { ...modifiedEvent },
+            ]);
+          }
+        } else {
+          console.log(response.data.error);
+        }
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
   };
 
   const handleEventClick = (info) => handleShowEditDeleteModal(info.event);
@@ -250,8 +299,8 @@ export default function EditPage({ user }) {
     setSelectedUser(
       (selectedEvent && selectedEvent.extendedProps)
         ? {
-          user_id: selectedEvent.extendedProps.user_id,
-          real_name: selectedEvent.extendedProps.real_name,
+          userId: selectedEvent.extendedProps.userId,
+          realName: selectedEvent.extendedProps.realName,
         }
         : {
           ...workers[0],
@@ -274,28 +323,70 @@ export default function EditPage({ user }) {
   };
 
   const handleEditSubmit = () => {
+    let modifiedEvent = {};
     const userSelected = { ...selectedUser };
-    if (userSelected.user_id && selectedEventType.trim() !== '') {
-      const modifiedEvent = {
-        title: `${userSelected.real_name}'s ${selectedEventType.substring(0, 1).toUpperCase()}${selectedEventType.substring(1)}`,
-        date: selectedEvent.extendedProps.date,
-        classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(userSelected.user_id) % 50}`]
-          : ['leave-block'],
-        extendedProps: {
-          id: selectedEvent.extendedProps.id,
-          user_id: userSelected.user_id,
-          real_name: userSelected.real_name,
-          type: selectedEventType,
-          date: selectedEvent.extendedProps.date,
-        },
+    if (selectedEventType.trim() !== '') {
+      const data = {
+        organisationId: user.organisation_id,
+        type: selectedEventType,
+        dateAt: new Date(selectedEvent.extendedProps.date),
+        workerId: (userSelected && userSelected.id) ? userSelected.id : 0,
       };
-      setEvents((oldEvents) => [
-        ...oldEvents.filter(
-          (oldEvent) => oldEvent.extendedProps.id !== selectedEvent.extendedProps.id,
-        ),
-        { ...modifiedEvent },
-      ]);
+      axios
+        .put(
+          `${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/optimisation/${selectedEvent.extendedProps.id}`,
+          data,
+          getApiHeader(user.token),
+        )
+        .then((response) => {
+          if (!response.data.isError) {
+            if (response.data.modifiedEvent) {
+              const { dateAt } = response.data.modifiedEvent;
+              const dateAtObj = new Date(dateAt);
+
+              const yearNumberStr = `${dateAtObj.getFullYear()}`;
+              let monthNumberStr = `${dateAtObj.getMonth() + 1}`;
+              let dateNumberStr = `${dateAtObj.getDate()}`;
+
+              if (monthNumberStr < 2) {
+                monthNumberStr = `0${monthNumberStr}`;
+              }
+
+              if (dateNumberStr.length < 2) {
+                dateNumberStr = `0${dateNumberStr}`;
+              }
+
+              modifiedEvent = {
+                ...response.data.modifiedEvent,
+                classNames: (response.data.modifiedEvent.type === 'shift')
+                  ? [`shift-block-${response.data.modifiedEvent.userId % 50}`]
+                  : ['leave-block'],
+                date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+                extendedProps: {
+                  id: response.data.modifiedEvent.id,
+                  userId: response.data.modifiedEvent.userId,
+                  realName: response.data.modifiedEvent.realName,
+                  type: response.data.modifiedEvent.type,
+                  title: response.data.modifiedEvent.title,
+                  date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+                },
+              };
+
+              setEvents((oldEvents) => [
+                ...oldEvents.filter(
+                  (oldEvent) => oldEvent.extendedProps.id !== modifiedEvent.id,
+                ),
+                { ...modifiedEvent },
+              ]);
+            }
+          } else {
+            console.log(response.data.error);
+          }
+        })
+        .catch((error) => {
+        // handle error
+          console.log(error);
+        });
     }
 
     handleCloseEditModal();

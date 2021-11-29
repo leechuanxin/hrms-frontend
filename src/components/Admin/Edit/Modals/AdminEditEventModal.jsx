@@ -29,7 +29,7 @@ export default function AdminEditEventModal({
             defaultValue={
                   (
                     (selectedEvent && selectedEvent.extendedProps)
-                      ? selectedEvent.extendedProps.user_id
+                      ? selectedEvent.extendedProps.userId
                       : 'DEFAULT'
                   )
                 }
@@ -37,10 +37,10 @@ export default function AdminEditEventModal({
             <option value="DEFAULT" disabled>Select a worker</option>
             {users.map((user) => (
               <option
-                value={user.user_id}
-                key={`user${user.user_id}`}
+                value={user.id}
+                key={`user${user.id}`}
               >
-                {user.real_name}
+                {user.realName}
               </option>
             ))}
           </Form.Select>
