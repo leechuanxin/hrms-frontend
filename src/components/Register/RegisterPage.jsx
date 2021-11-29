@@ -168,7 +168,7 @@ export default function RegisterPage({ user }) {
           <form>
             <div className="row">
               <div className="col-12">
-                <h3 className="mb-3 index-header font-bold text-lg">Register</h3>
+                <h5 className="mb-3 index-header font-bold text-lg">Register</h5>
               </div>
               <div className="col-12">
                 <p className="mb-3 text-blue-50">
@@ -256,7 +256,6 @@ export default function RegisterPage({ user }) {
             </div>
             <hr className="mb-4" />
             <button
-              className="btn btn-primary btn-lg btn-block"
               type="submit"
               onClick={handleSubmit}
             >

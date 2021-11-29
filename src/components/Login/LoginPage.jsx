@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useContext } from 'react';
-import { useLocation, Link, Redirect } from 'react-router-dom';
+import { useLocation, Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 // Custom imports
 import REACT_APP_BACKEND_URL from '../../modules/urls.mjs';
@@ -126,7 +126,7 @@ export default function LoginPage({
           <form>
             <div className="row">
               <div className="col-12">
-                <h3 className="mb-3 index-header font-bold text-lg">Log In</h3>
+                <h5 className="mb-3 index-header font-bold text-lg">Log In</h5>
               </div>
               <div className="col-12">
                 <p className="mb-3">
@@ -177,7 +177,6 @@ export default function LoginPage({
             </div>
             <hr className="mb-4" />
             <button
-              className="btn btn-primary btn-lg btn-block"
               type="submit"
               onClick={handleSubmit}
             >
