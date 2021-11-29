@@ -442,6 +442,12 @@ export default function AdminOptimisePage({ user }) {
     <div className="container-fluid pt-5">
       <div className="row w-100 pt-3 pb-3">
         <div className="col-12 pt-1">
+          <p className="mb-0">
+            <a href="/"><small>« Back to Home</small></a>
+          </p>
+          <hr />
+        </div>
+        <div className="col-12 pt-3">
           <h3>
             {getMonthString(nextMonthDate)}
             {' '}

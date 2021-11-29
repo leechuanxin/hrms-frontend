@@ -417,6 +417,12 @@ export default function WorkerEditPage({ user }) {
     <div className="container pt-5 pb-3">
       <div className="row w-100 pt-3">
         <div className="col-12 pt-1">
+          <p className="mb-0">
+            <a href="/"><small>« Back to Home</small></a>
+          </p>
+          <hr />
+        </div>
+        <div className="col-12 pt-3">
           <h4 className="text-center">
             Shift Submission →
             {' '}
