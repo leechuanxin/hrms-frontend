@@ -195,7 +195,7 @@ export default function App() {
                 setIsAuthPage={setIsAuthPage}
                 handleSetNavbar={handleSetNavbar}
               >
-                <AdminOptimise />
+                <AdminOptimise user={user} />
               </NavbarWrapper>
             )}
           />

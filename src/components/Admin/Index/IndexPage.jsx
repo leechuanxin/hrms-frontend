@@ -67,29 +67,7 @@ function AdminIndexShiftSummary({ workers }) {
 }
 
 export default function AdminIndexPage({ user }) {
-  const [events, setEvents] = useState([
-    {
-      title: '',
-      date: '2021-12-03',
-      extendedProps: {
-        id: 1, user_id: 1, real_name: 'Lee Chuan Xin', type: 'shift', date: '2021-12-03',
-      },
-    },
-    {
-      title: '',
-      date: '2021-12-07',
-      extendedProps: {
-        id: 2, user_id: 1, real_name: 'Lee Chuan Xin', type: 'leave', date: '2021-12-07',
-      },
-    },
-    {
-      title: '',
-      date: '2021-12-08',
-      extendedProps: {
-        id: 3, user_id: 2, real_name: 'Wong Shen Nan', type: 'shift', date: '2021-12-08',
-      },
-    },
-  ]);
+  const [events, setEvents] = useState([]);
 
   const getNextMonthString = (date) => {
     const formatter = new Intl.DateTimeFormat('default', { month: 'long' });
