@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types, jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import {
+  Link,
   Redirect,
 } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
@@ -98,12 +99,17 @@ function AdminOptimiseEditInterface({
             <h4>Edit Optimised Schedule</h4>
           </div>
           <div className="col-5 d-flex justify-content-end">
-            <button type="button" className="btn btn-primary">Edit</button>
+            <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
           </div>
         </div>
       </div>
       <div className="col-12"><hr /></div>
       <div className="col-12 pt-1">
+        <div>
+          <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+        </div>
+      </div>
+      <div className="col-12 pt-3">
         <FullCalendar
           plugins={[interactionPlugin, dayGridPlugin]}
           initialView="dayGridMonth"
@@ -112,6 +118,9 @@ function AdminOptimiseEditInterface({
           selectable
           events={optimisedSchedule}
         />
+      </div>
+      <div className="col-12 pt-3 d-flex justify-content-end">
+        <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
       </div>
       <div className="col-12 d-md-none pt-3"><hr /></div>
     </>
