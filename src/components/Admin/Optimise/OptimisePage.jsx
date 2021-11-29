@@ -213,12 +213,19 @@ export default function AdminOptimisePage({ user }) {
           </h3>
           <hr />
         </div>
-        <div className="d-none d-md-block col-md-4 pt-1">
+        <div className="d-none d-md-block col-md-5 pt-1">
           <AdminOptimiseShiftSummary workers={workers} />
         </div>
-        <div className="col-12 col-md-8 pt-3">
+        <div className="col-12 col-md-7 pt-3">
           <div className="col-12">
-            <h4>Select an Optimised Schedule</h4>
+            <div className="row">
+              <div className="col-7">
+                <h4>Select an Optimised Schedule</h4>
+              </div>
+              <div className="col-5 d-flex justify-content-end">
+                <button type="button" className="btn btn-primary">Confirm Schedule</button>
+              </div>
+            </div>
           </div>
           <div className="col-12"><hr /></div>
           <div className="col-12 pt-1">
@@ -265,6 +272,9 @@ export default function AdminOptimisePage({ user }) {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="col-12 pt-3 d-flex justify-content-end">
+            <button type="button" className="btn btn-primary">Confirm Schedule</button>
           </div>
           <div className="col-12 d-md-none pt-3"><hr /></div>
         </div>
