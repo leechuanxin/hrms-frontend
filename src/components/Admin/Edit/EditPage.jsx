@@ -57,6 +57,7 @@ export default function EditPage({ user }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [scheduleId, setScheduleId] = useState(0);
 
   const [, setUserId] = useState(0);
   const [, setRealName] = useState('');
@@ -101,6 +102,7 @@ export default function EditPage({ user }) {
                 optimisations: rerenderedOptimisations,
               };
             });
+
             setRealName(response.data.realName);
             setUserId(response.data.userId);
             setWorkers([...response.data.workers]);
@@ -124,6 +126,15 @@ export default function EditPage({ user }) {
               });
               setHasOptimisedSchedule(true);
               setEvents([...optimisedSchedulePut]);
+            }
+            if (response.data.schedules && response.data.schedules.length > 0) {
+              let currScheduleId = 0;
+              for (let i = 0; i < response.data.schedules.length; i += 1) {
+                if (response.data.schedules[i].isSelected) {
+                  currScheduleId = response.data.schedules[i].id;
+                }
+              }
+              setScheduleId(currScheduleId);
             }
           } else {
             setIsAdmin(false);
@@ -177,25 +188,62 @@ export default function EditPage({ user }) {
   };
 
   const handleModalAddSubmit = () => {
-    const userSelected = { ...selectedUser };
-    const currentEvents = [...events];
     // get all events on selected day
-    if (userSelected.userId && selectedEventType.trim() !== '') {
-      const newEvent = {
-        title: `${userSelected.realName}`,
-        date: currentDate,
-        classNames: (selectedEventType === 'shift')
-          ? [`shift-block-${Number(userSelected.userId) % 50}`]
-          : ['leave-block'],
-        extendedProps: {
-          id: currentEvents.length + 1,
-          userId: userSelected.userId,
-          realName: userSelected.realName,
-          type: selectedEventType,
-          date: currentDate,
-        },
+    let newEvent = {};
+    const userSelected = { ...selectedUser };
+    if (userSelected && userSelected.id && selectedEventType.trim() !== '') {
+      const data = {
+        adminId: user.user_id,
+        userId: userSelected.id,
+        scheduleId,
+        organisationId: user.organisation_id,
+        type: selectedEventType,
+        dateAt: new Date(currentDate),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
-      setEvents((oldEvents) => ([...oldEvents, newEvent]));
+
+      axios
+        .post(`${REACT_APP_BACKEND_URL}/api/admin/${user.user_id}/optimisation`, data, getApiHeader(user.token))
+        .then((response) => {
+          if (response.data.newEvent) {
+            const { dateAt } = response.data.newEvent;
+            const dateAtObj = new Date(dateAt);
+
+            const yearNumberStr = `${dateAtObj.getFullYear()}`;
+            let monthNumberStr = `${dateAtObj.getMonth() + 1}`;
+            let dateNumberStr = `${dateAtObj.getDate()}`;
+
+            if (monthNumberStr < 2) {
+              monthNumberStr = `0${monthNumberStr}`;
+            }
+
+            if (dateNumberStr.length < 2) {
+              dateNumberStr = `0${dateNumberStr}`;
+            }
+
+            newEvent = {
+              ...response.data.newEvent,
+              classNames: (response.data.newEvent.type === 'shift')
+                ? [`shift-block-${response.data.newEvent.userId % 50}`]
+                : ['leave-block'],
+              date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              extendedProps: {
+                id: response.data.newEvent.id,
+                userId: response.data.newEvent.userId,
+                realName: response.data.newEvent.realName,
+                type: response.data.newEvent.type,
+                title: response.data.newEvent.title,
+                date: `${yearNumberStr}-${monthNumberStr}-${dateNumberStr}`,
+              },
+            };
+            setEvents((oldEvents) => ([...oldEvents, newEvent]));
+          }
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+        });
     }
 
     handleCloseAddModal();
