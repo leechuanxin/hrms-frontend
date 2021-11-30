@@ -465,10 +465,17 @@ export default function EditPage({ user }) {
     return (
       <div className="container pt-5 pb-5">
         <div className="row w-100 pt-3">
-          <div className="col-12 pt-1 d-flex justify-content-center">
-            <div className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
-              <span className="sr-only">Loading...</span>
+          <div className="col-12 pt-1">
+            <div>
+              <p className="text-center">Loading ...</p>
+              <div className="meter w-100">
+                <span style={{ width: '98%' }} />
+              </div>
             </div>
+            {/* <div
+            className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
+              <span className="sr-only">Loading...</span>
+            </div> */}
           </div>
         </div>
       </div>

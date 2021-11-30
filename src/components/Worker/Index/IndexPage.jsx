@@ -169,10 +169,17 @@ export default function WorkerIndexPage({ user }) {
     return (
       <div className="container pt-5 pb-5">
         <div className="row w-100 pt-3">
-          <div className="col-12 pt-1 d-flex justify-content-center">
-            <div className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
-              <span className="sr-only">Loading...</span>
+          <div className="col-12 pt-1">
+            <div>
+              <p className="text-center">Loading ...</p>
+              <div className="meter w-100">
+                <span style={{ width: '98%' }} />
+              </div>
             </div>
+            {/* <div
+            className="spinner-border mt-5" style={{ width: '5rem', height: '5rem' }} role="status">
+              <span className="sr-only">Loading...</span>
+            </div> */}
           </div>
         </div>
       </div>
@@ -197,22 +204,22 @@ export default function WorkerIndexPage({ user }) {
         <div className="col-12 pt-1 d-flex justify-content-center align-items-center">
           <div className="me-4">
             <span className="square-image-wrapper">
-              <span className="square-image circle">
+              <span className="square-image">
                 <img alt={`${realName}`} src={`https://avatars.dicebear.com/api/croodles-neutral/${userId}.svg`} />
               </span>
             </span>
           </div>
           <div>
             <h3>{realName}</h3>
-            <p className="mb-0 fade-text-color">
+            <h5 className="mb-0 fade-text-color">
               <strong>Worker</strong>
-            </p>
+            </h5>
           </div>
         </div>
         <div className="col-12"><hr /></div>
         <div className="col-12 pt-3">
           <div className="row">
-            <div className="col-6 ps-3 pe-3">
+            <div className="col-5 ps-3 pe-3">
               <div />
               <h4>
                 Shift Summary →
@@ -220,33 +227,35 @@ export default function WorkerIndexPage({ user }) {
                 {getYearString(nextMonthDate)}
               </h4>
               <div className="col-12 pt-2">
-                <div className="table-responsive">
-                  <table className="table align-middle">
-                    <thead>
-                      <tr>
-                        <th scope="col">{' '}</th>
-                        <th scope="col" className="text-center">Days</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <strong>Number of Leaves Left</strong>
-                        </td>
-                        <td className="text-center">{leavesLeft}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>Number of Shifts to be Allocated</strong>
-                        </td>
-                        <td className="text-center">{shiftsLeft}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                <pre>
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead>
+                        <tr>
+                          <th scope="col">{' '}</th>
+                          <th scope="col" className="text-center">Days</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <strong>Number of Leaves Left</strong>
+                          </td>
+                          <td className="text-center">{leavesLeft}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Number of Shifts to be Allocated</strong>
+                          </td>
+                          <td className="text-center">{shiftsLeft}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </pre>
               </div>
             </div>
-            <div className="col-6 ps-3 pe-3">
+            <div className="col-7 ps-3 pe-3">
               <div className="row">
                 <div className="col-9">
                   <h4>
@@ -257,18 +266,20 @@ export default function WorkerIndexPage({ user }) {
                     {getYearString(nextMonthDate)}
                   </h4>
                 </div>
-                <div className="col-3 d-flex justify-content-end">
-                  <Link className="btn btn-primary" to="/workeredit" role="button">Edit</Link>
+                <div className="col-3 d-flex justify-content-end align-items-center">
+                  <Link className="link-button" to="/workeredit" role="button">Edit</Link>
                 </div>
               </div>
               <div className="col-12 pt-2">
-                <FullCalendar
-                  plugins={[dayGridPlugin]}
-                  initialView="dayGridMonth"
-                  events={events}
-                  initialDate={nextMonthDate}
-                  headerToolbar={false}
-                />
+                <pre>
+                  <FullCalendar
+                    plugins={[dayGridPlugin]}
+                    initialView="dayGridMonth"
+                    events={events}
+                    initialDate={nextMonthDate}
+                    headerToolbar={false}
+                  />
+                </pre>
               </div>
             </div>
           </div>

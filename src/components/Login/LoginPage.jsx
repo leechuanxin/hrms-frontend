@@ -126,7 +126,7 @@ export default function LoginPage({
           <form>
             <div className="row">
               <div className="col-12">
-                <h5 className="mb-3 index-header font-bold text-lg">Log In</h5>
+                <h4 className="mb-3 index-header font-bold text-lg">Log In</h4>
               </div>
               <div className="col-12">
                 <p className="mb-3">
