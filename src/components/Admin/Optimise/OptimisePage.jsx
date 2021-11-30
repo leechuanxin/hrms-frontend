@@ -29,7 +29,7 @@ function AdminOptimiseSelectInterface({
             <h4>Select an Optimised Schedule</h4>
           </div>
           <div className="col-5 d-flex justify-content-end">
-            <button type="button" className="btn btn-primary" onClick={handleConfirmClick}>Confirm Schedule</button>
+            <button type="button" onClick={handleConfirmClick}>Confirm Schedule</button>
           </div>
         </div>
       </div>
@@ -40,10 +40,9 @@ function AdminOptimiseSelectInterface({
             <div className="row">
               <div className="col-1 d-flex justify-content-center">
                 <input
-                  className="form-check-input"
                   type="radio"
                   name="exampleRadios"
-                  id="exampleRadios1"
+                  id={`exampleRadios${index}`}
                   value={schedule.id}
                   checked={(selectedOption === schedule.id)}
                   onChange={handleRadioChange}
@@ -52,7 +51,7 @@ function AdminOptimiseSelectInterface({
               <div className="col-11">
                 <div className="row">
                   <div className="col-9">
-                    <label className="form-check-label w-100" htmlFor="exampleRadios1">
+                    <label className="form-check-label w-100" htmlFor={`exampleRadios${index}`}>
                       <p>
                         Choice #
                         {index + 1}
@@ -61,26 +60,28 @@ function AdminOptimiseSelectInterface({
                   </div>
                   <div className="col-3 d-flex justify-content-end">
                     <div>
-                      <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+                      <span className="badge bg-dark me-2">Leaves</span>
                     </div>
                   </div>
                 </div>
 
-                <FullCalendar
-                  plugins={[interactionPlugin, dayGridPlugin]}
-                  initialView="dayGridMonth"
-                  headerToolbar={false}
-                  initialDate={nextMonthDate}
-                  events={schedule.optimisations}
-                  selectable
-                />
+                <pre>
+                  <FullCalendar
+                    plugins={[interactionPlugin, dayGridPlugin]}
+                    initialView="dayGridMonth"
+                    headerToolbar={false}
+                    initialDate={nextMonthDate}
+                    events={schedule.optimisations}
+                    selectable
+                  />
+                </pre>
               </div>
             </div>
           </div>
         ))}
       </div>
       <div className="col-12 pt-3 d-flex justify-content-end">
-        <button type="button" className="btn btn-primary" onClick={handleConfirmClick}>Confirm Schedule</button>
+        <button type="button" onClick={handleConfirmClick}>Confirm Schedule</button>
       </div>
       <div className="col-12 d-md-none pt-3"><hr /></div>
     </>
@@ -98,29 +99,31 @@ function AdminOptimiseEditInterface({
           <div className="col-7">
             <h4>Edit Optimised Schedule</h4>
           </div>
-          <div className="col-5 d-flex justify-content-end">
-            <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
+          <div className="col-5 d-flex justify-content-end align-items-center">
+            <Link className="link-button" to="/adminedit" role="button">Edit</Link>
           </div>
         </div>
       </div>
       <div className="col-12"><hr /></div>
       <div className="col-12 pt-1">
         <div>
-          <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+          <span className="badge bg-dark me-2">Leaves</span>
         </div>
       </div>
       <div className="col-12 pt-3">
-        <FullCalendar
-          plugins={[interactionPlugin, dayGridPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={false}
-          initialDate={nextMonthDate}
-          selectable
-          events={optimisedSchedule}
-        />
+        <pre>
+          <FullCalendar
+            plugins={[interactionPlugin, dayGridPlugin]}
+            initialView="dayGridMonth"
+            headerToolbar={false}
+            initialDate={nextMonthDate}
+            selectable
+            events={optimisedSchedule}
+          />
+        </pre>
       </div>
       <div className="col-12 pt-3 d-flex justify-content-end">
-        <Link className="btn btn-primary" to="/adminedit" role="button">Edit</Link>
+        <Link className="link-button" to="/adminedit" role="button">Edit</Link>
       </div>
       <div className="col-12 d-md-none pt-3"><hr /></div>
     </>
@@ -173,22 +176,23 @@ function AdminOptimiseShiftSummary({ workers }) {
       </div>
       <div className="col-12"><hr /></div>
       <div className="col-12 pt-3">
-        <span className="badge rounded-pill bg-success me-2">Healthy</span>
-        <span className="badge rounded-pill bg-warning text-dark me-2">Running Short of Time</span>
-        <span className="badge rounded-pill bg-danger me-2">Danger</span>
+        <span className="badge bg-success me-2">Healthy</span>
+        <span className="badge bg-warning text-dark me-2">Running Short of Time</span>
+        <span className="badge bg-danger me-2">Danger</span>
       </div>
       <div className="col-12 pt-3">
-        <div className="table-responsive">
-          <table className="table align-middle">
-            <thead>
-              <tr>
-                <th scope="col">{' '}</th>
-                <th scope="col" className="text-center">Remaining Shifts</th>
-                <th scope="col" className="text-center">Remaining Leaves</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
+        <pre>
+          <div className="table-responsive">
+            <table className="table align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">{' '}</th>
+                  <th scope="col" className="text-center">Remaining Shifts</th>
+                  <th scope="col" className="text-center">Remaining Leaves</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
                 workers.map((worker) => (
                   <tr key={worker.id}>
                     <td>{worker.realName}</td>
@@ -201,9 +205,10 @@ function AdminOptimiseShiftSummary({ workers }) {
                   </tr>
                 ))
               }
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
+        </pre>
       </div>
     </div>
   );
@@ -462,10 +467,7 @@ export default function AdminOptimisePage({ user }) {
           </h3>
           <hr />
         </div>
-        <div className="d-none d-md-block col-md-5 pt-1">
-          <AdminOptimiseShiftSummary workers={workers} />
-        </div>
-        <div className="col-12 col-md-7 pt-3">
+        <div className="col-12 pt-3 optimise-main-interface">
           <AdminOptimiseMainInterface
             hasOptimisedSchedule={hasOptimisedSchedule}
             nextMonthDate={nextMonthDate}
@@ -476,7 +478,7 @@ export default function AdminOptimisePage({ user }) {
             handleConfirmClick={handleConfirmClick}
           />
         </div>
-        <div className="d-md-none col-12">
+        <div className="col-12">
           <AdminOptimiseShiftSummary workers={workers} />
         </div>
       </div>

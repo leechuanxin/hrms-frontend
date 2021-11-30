@@ -30,22 +30,23 @@ function AdminIndexShiftSummary({ workers }) {
       </div>
       <div className="col-12"><hr /></div>
       <div className="col-12 pt-3">
-        <span className="badge rounded-pill bg-success me-2">Healthy</span>
-        <span className="badge rounded-pill bg-warning text-dark me-2">Running Short of Time</span>
-        <span className="badge rounded-pill bg-danger me-2">Danger</span>
+        <span className="badge bg-success me-2">Healthy</span>
+        <span className="badge bg-warning text-dark me-2">Running Short of Time</span>
+        <span className="badge bg-danger me-2">Danger</span>
       </div>
       <div className="col-12 pt-3">
-        <div className="table-responsive">
-          <table className="table align-middle">
-            <thead>
-              <tr>
-                <th scope="col">{' '}</th>
-                <th scope="col" className="text-center">Remaining Shifts</th>
-                <th scope="col" className="text-center">Remaining Leaves</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
+        <pre>
+          <div className="table-responsive">
+            <table className="table align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">{' '}</th>
+                  <th scope="col" className="text-center">Remaining Shifts</th>
+                  <th scope="col" className="text-center">Remaining Leaves</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
                 workers.map((worker) => (
                   <tr key={worker.id}>
                     <td>{worker.realName}</td>
@@ -58,9 +59,10 @@ function AdminIndexShiftSummary({ workers }) {
                   </tr>
                 ))
               }
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
+        </pre>
       </div>
     </div>
   );
@@ -206,10 +208,7 @@ export default function AdminIndexPage({ user }) {
           </div>
         </div>
         <div className="col-12"><hr /></div>
-        <div className="d-none d-md-block col-md-5">
-          <AdminIndexShiftSummary workers={workers} />
-        </div>
-        <div className="col-12 col-md-7">
+        <div className="col-12 col-md-12">
           <div className="row">
             <div className="col-12 pt-1">
               <div className="row align-items-center">
@@ -223,27 +222,29 @@ export default function AdminIndexPage({ user }) {
                   </h4>
                 </div>
                 <div className="col-4  d-flex justify-content-end">
-                  <Link className="btn btn-success" to="/adminoptimise" role="button">Optimise</Link>
+                  <Link className="link-button" to="/adminoptimise" role="button">Optimise</Link>
                 </div>
               </div>
             </div>
             <div className="col-12"><hr /></div>
             <div className="col-12 pt-3">
-              <span className="badge rounded-pill bg-dark me-2">Leaves</span>
+              <span className="badge bg-dark me-2">Leaves</span>
             </div>
             <div className="col-12 pt-3">
-              <FullCalendar
-                plugins={[dayGridPlugin]}
-                initialView="dayGridMonth"
-                events={events}
-                initialDate={nextMonthDate}
-                headerToolbar={false}
-              />
+              <pre>
+                <FullCalendar
+                  plugins={[dayGridPlugin]}
+                  initialView="dayGridMonth"
+                  events={events}
+                  initialDate={nextMonthDate}
+                  headerToolbar={false}
+                />
+              </pre>
             </div>
             <div className="col-12 d-md-none pt-3"><hr /></div>
           </div>
         </div>
-        <div className="d-md-none col-12">
+        <div className="col-12">
           <AdminIndexShiftSummary workers={workers} />
         </div>
       </div>

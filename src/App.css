@@ -402,10 +402,6 @@ button,
 }
 
 input[type="number"] {
-  height: 30px;
-}
-
-input[type="number"] {
   line-height: 2;
 }
 
@@ -508,4 +504,19 @@ input[type="number"]:focus {
 .modal-body select {
   font-size: 11px;
   height: 21px;
+}
+
+.badge {
+  border-radius: 0;
+}
+
+.optimise-main-interface input[type="radio"] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  background: none;
+  position: static;
+  opacity: 1;
+  border: none;
+  margin-top: 15px;
 }
