@@ -208,7 +208,7 @@ export default function AdminIndexPage({ user }) {
           </div>
         </div>
         <div className="col-12"><hr /></div>
-        <div className="col-12 col-md-7">
+        <div className="col-12 col-md-8">
           <div className="row">
             <div className="col-12 pt-1">
               <div className="row align-items-center">
@@ -244,7 +244,7 @@ export default function AdminIndexPage({ user }) {
             <div className="col-12 d-md-none pt-3"><hr /></div>
           </div>
         </div>
-        <div className="col-12 col-md-5">
+        <div className="col-12 col-md-4">
           <AdminIndexShiftSummary workers={workers} />
         </div>
       </div>
