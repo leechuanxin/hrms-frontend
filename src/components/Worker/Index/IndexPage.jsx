@@ -195,102 +195,94 @@ export default function WorkerIndexPage({ user }) {
   return (
     <div className="container pt-5 pb-5">
       <div className="row w-100 pt-3">
-        <div className="col-3 d-flex">
-          <ul className="tree-view w-100">
-            <li><Link to="/">Home</Link></li>
-            <li><a href="#issues-contributing-etc">Issues, Contributing, etc.</a></li>
-          </ul>
-        </div>
-        <div className="col-9">
-          <WorkerIndexAlert
-            hasOptimisedSchedule={hasOptimisedSchedule}
-            getMonthString={getMonthString}
-            getYearString={getYearString}
-            nextMonthDate={nextMonthDate}
-          />
-          <div className="col-12 pt-1 d-flex justify-content-center align-items-center">
-            <div className="me-4">
-              <span className="square-image-wrapper">
-                <span className="square-image">
-                  <img alt={`${realName}`} src={`https://avatars.dicebear.com/api/croodles-neutral/${userId}.svg`} />
-                </span>
+        <WorkerIndexAlert
+          hasOptimisedSchedule={hasOptimisedSchedule}
+          getMonthString={getMonthString}
+          getYearString={getYearString}
+          nextMonthDate={nextMonthDate}
+        />
+        <div className="col-12 pt-1 d-flex justify-content-center align-items-center">
+          <div className="me-4">
+            <span className="square-image-wrapper">
+              <span className="square-image">
+                <img alt={`${realName}`} src={`https://avatars.dicebear.com/api/croodles-neutral/${userId}.svg`} />
               </span>
-            </div>
-            <div>
-              <h3>{realName}</h3>
-              <h5 className="mb-0 fade-text-color">
-                <strong>Worker</strong>
-              </h5>
-            </div>
+            </span>
           </div>
-          <div className="col-12"><hr /></div>
-          <div className="col-12 pt-3">
-            <div className="row">
-              <div className="col-12 pt-3 s-3 pe-3">
-                <div className="row">
-                  <div className="col-9">
-                    <h4>
-                      Shift Submission →
-                      {' '}
-                      {getMonthString(nextMonthDate)}
-                      {' '}
-                      {getYearString(nextMonthDate)}
-                    </h4>
-                  </div>
-                  <div className="col-3 d-flex justify-content-end align-items-center">
-                    <Link className="link-button" to="/workeredit" role="button">Edit</Link>
-                  </div>
+          <div>
+            <h3>{realName}</h3>
+            <h5 className="mb-0 fade-text-color">
+              <strong>Worker</strong>
+            </h5>
+          </div>
+        </div>
+        <div className="col-12"><hr /></div>
+        <div className="col-12 pt-3">
+          <div className="row">
+            <div className="col-8 pt-3 s-3 pe-3">
+              <div className="row">
+                <div className="col-9">
+                  <h4>
+                    Shift Submission →
+                    {' '}
+                    {getMonthString(nextMonthDate)}
+                    {' '}
+                    {getYearString(nextMonthDate)}
+                  </h4>
                 </div>
-                <div className="col-12 pt-2">
-                  <pre>
-                    <FullCalendar
-                      plugins={[dayGridPlugin]}
-                      initialView="dayGridMonth"
-                      events={events}
-                      initialDate={nextMonthDate}
-                      headerToolbar={false}
-                    />
-                  </pre>
+                <div className="col-3 d-flex justify-content-end align-items-center">
+                  <Link className="link-button" to="/workeredit" role="button">Edit</Link>
                 </div>
               </div>
-              <div className="col-12 pt-3 ps-3 pe-3">
-                <div />
-                <h4>
-                  Shift Summary →
-                  {' '}
-                  {getYearString(nextMonthDate)}
-                </h4>
-                <div className="col-12 pt-2">
-                  <pre>
-                    <div className="table-responsive">
-                      <table className="table align-middle">
-                        <thead>
-                          <tr>
-                            <th scope="col">{' '}</th>
-                            <th scope="col" className="text-center">Days</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <strong>Number of Leaves Left</strong>
-                            </td>
-                            <td className="text-center">{leavesLeft}</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <strong>Number of Shifts to be Allocated</strong>
-                            </td>
-                            <td className="text-center">{shiftsLeft}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </pre>
-                </div>
+              <div className="col-12 pt-2">
+                <pre>
+                  <FullCalendar
+                    plugins={[dayGridPlugin]}
+                    initialView="dayGridMonth"
+                    events={events}
+                    initialDate={nextMonthDate}
+                    headerToolbar={false}
+                  />
+                </pre>
               </div>
-
             </div>
+            <div className="col-4 pt-3 ps-3 pe-3">
+              <div />
+              <h4>
+                Shift Summary →
+                {' '}
+                {getYearString(nextMonthDate)}
+              </h4>
+              <div className="col-12 pt-2">
+                <pre>
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead>
+                        <tr>
+                          <th scope="col">{' '}</th>
+                          <th scope="col" className="text-center">Days</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <strong>Number of Leaves Left</strong>
+                          </td>
+                          <td className="text-center">{leavesLeft}</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>Number of Shifts to be Allocated</strong>
+                          </td>
+                          <td className="text-center">{shiftsLeft}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </pre>
+              </div>
+            </div>
+
           </div>
         </div>
 

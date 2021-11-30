@@ -14,7 +14,6 @@ function NavbarButtons({
         className="d-inline-block"
       >
         <button
-          className="btn btn-danger"
           type="submit"
           onClick={handleLogoutSubmit}
         >
@@ -26,7 +25,7 @@ function NavbarButtons({
 
   if (!isAuthPage) {
     return (
-      <Link className="btn btn-success" to="/login" role="button">Log In</Link>
+      <Link className="link-button" to="/login" role="button">Log In</Link>
     );
   }
 
@@ -67,7 +66,7 @@ export default function Navbar({
                 </a>
 
               </div>
-              <div className="col-9 text-end">
+              <div className="col-9 d-flex justify-content-end align-items-center">
                 <NavbarButtons
                   isLoggedIn={isLoggedIn}
                   isAuthPage={isAuthPage}

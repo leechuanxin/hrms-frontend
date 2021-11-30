@@ -28,7 +28,7 @@ function AdminOptimiseSelectInterface({
           <div className="col-7">
             <h4>Select an Optimised Schedule</h4>
           </div>
-          <div className="col-5 d-flex justify-content-end">
+          <div className="col-5 d-flex justify-content-end align-items-center">
             <button type="button" onClick={handleConfirmClick}>Confirm Schedule</button>
           </div>
         </div>
@@ -467,7 +467,7 @@ export default function AdminOptimisePage({ user }) {
           </h3>
           <hr />
         </div>
-        <div className="col-12 pt-3 optimise-main-interface">
+        <div className="col-12 col-md-8 pt-3 optimise-main-interface">
           <AdminOptimiseMainInterface
             hasOptimisedSchedule={hasOptimisedSchedule}
             nextMonthDate={nextMonthDate}
@@ -478,7 +478,7 @@ export default function AdminOptimisePage({ user }) {
             handleConfirmClick={handleConfirmClick}
           />
         </div>
-        <div className="col-12">
+        <div className="col-12 col-md-4">
           <AdminOptimiseShiftSummary workers={workers} />
         </div>
       </div>

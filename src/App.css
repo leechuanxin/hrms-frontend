@@ -109,6 +109,12 @@ button,
 
 .offcanvas-header .btn-close {
   border-radius: 50%;
+  box-shadow: none;
+}
+
+.offcanvas-header .btn-close:active {
+  padding: 0;
+  box-shadow: none;
 }
 
 .fc a {

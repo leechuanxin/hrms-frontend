@@ -510,18 +510,20 @@ export default function EditPage({ user }) {
           <hr />
         </div>
         <div className="col-12 pt-3">
-          <FullCalendar
-            plugins={[interactionPlugin, dayGridPlugin]}
-            initialView="dayGridMonth"
-            editable
-            selectable
-            headerToolbar={false}
-            initialDate={nextMonthDate}
-            dateClick={handleShowAddModal}
-            eventClick={handleEventClick}
-            eventDrop={handleEventDrop}
-            events={events}
-          />
+          <pre>
+            <FullCalendar
+              plugins={[interactionPlugin, dayGridPlugin]}
+              initialView="dayGridMonth"
+              editable
+              selectable
+              headerToolbar={false}
+              initialDate={nextMonthDate}
+              dateClick={handleShowAddModal}
+              eventClick={handleEventClick}
+              eventDrop={handleEventDrop}
+              events={events}
+            />
+          </pre>
         </div>
         {/* Add Modal */}
         <AdminAddEventModal
