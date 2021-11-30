@@ -88,12 +88,6 @@ export default function Navbar({
                 <li className="nav-item">
                   <Link className="nav-link text-white" to="/" aria-current="page" onClick={handleCloseOffCanvas}>Home</Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="/worker" aria-current="page" onClick={handleCloseOffCanvas}>Worker</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="/admin" aria-current="page" onClick={handleCloseOffCanvas}>Admin</Link>
-                </li>
               </ul>
             </div>
           </Offcanvas.Body>
