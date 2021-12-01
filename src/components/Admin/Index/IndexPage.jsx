@@ -104,8 +104,8 @@ export default function AdminIndexPage({ user }) {
   useEffect(() => {
     const hasUserId = !!user && user.user_id;
     const data = {
-      month: getMonthNumber(new Date(), 'next'),
-      year: getYearNumber(new Date(), 'next'),
+      month: getMonthNumber(new Date('2021-11-30'), 'next'),
+      year: getYearNumber(new Date('2021-11-30'), 'next'),
     };
     if (hasUserId) {
       axios
@@ -218,7 +218,7 @@ export default function AdminIndexPage({ user }) {
                     {' '}
                     {getNextMonthString(nextMonthDate)}
                     {' '}
-                    {getYearNumber(new Date(), 'next')}
+                    {getYearNumber(new Date('2021-11-30'), 'next')}
                   </h4>
                 </div>
                 <div className="col-4  d-flex justify-content-end">

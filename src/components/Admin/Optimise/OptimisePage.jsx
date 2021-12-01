@@ -261,8 +261,8 @@ export default function AdminOptimisePage({ user }) {
   useEffect(() => {
     const hasUserId = !!user && user.user_id;
     const data = {
-      month: getMonthNumber(new Date(), 'next'),
-      year: getYearNumber(new Date(), 'next'),
+      month: getMonthNumber(new Date('2021-11-30'), 'next'),
+      year: getYearNumber(new Date('2021-11-30'), 'next'),
     };
     if (hasUserId) {
       axios
@@ -341,8 +341,8 @@ export default function AdminOptimisePage({ user }) {
   const handleConfirmClick = (event) => {
     event.preventDefault();
     const data = {
-      month: getMonthNumber(new Date(), 'next'),
-      year: getYearNumber(new Date(), 'next'),
+      month: getMonthNumber(new Date('2021-11-30'), 'next'),
+      year: getYearNumber(new Date('2021-11-30'), 'next'),
     };
     axios
       .put(
