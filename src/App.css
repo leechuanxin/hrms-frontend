@@ -526,3 +526,7 @@ input[type="number"]:focus {
   border: none;
   margin-top: 15px;
 }
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: transparent !important;
+}
