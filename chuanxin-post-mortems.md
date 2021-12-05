@@ -50,6 +50,12 @@ Likewise, there are plenty of long methods in the EventsController. However, tha
 
 Mocking up the database early, and the final setup of the database models, as mentioned above.
 
+Scoping things further down, and the smart use of seed data (and perhaps some bells-and-whistles like UI work and nostalgia) ended up making the presentation way better than it should be.
+
+I was surprised I have had people hitting me up after the presentation telling me they liked the project, and asking how it works. I was a little hesitant during the presentations (hopefully it didn't show!) given my own knowledge and opinion that the project isn't complete without the LP solver integrated, as opposed to only seeding the optimisations.
+
+Early deployment helped (even before MVP), so that we did not have to wrangle with config and problems when we were close to presentations.
+
 ### What could have been better?
 
 Using Django was a major risk that ended up being a big downfall. It is a backend framework, and it's indeed true when it's stated online that you may not need to know Python fluently to use it. However, it requires a solid understanding of the backend conceptually: templating, REST frameworks, database relations, ORMs etc. Too much time was spent wrangling with Django that by the time we came to thinking about modelling our databases, we were too tilted.
